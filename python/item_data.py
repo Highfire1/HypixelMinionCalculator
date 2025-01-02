@@ -49,11 +49,11 @@ COMPACTOR_MAP:dict[str, ItemCompactor] = {
 }
 
 def is_compactable(item:str) -> bool:
-    return item in SMELT_MAP
+    return item in COMPACTOR_MAP
 
 def convert_to_compacted(item:str) -> ItemCompactor:
     assert item in COMPACTOR_MAP
-    return SMELT_MAP.get(item)
+    return COMPACTOR_MAP.get(item)
 
 SUPER_COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "Mutton": ItemCompactor("Mutton", 160, "Enchanted Mutton"),

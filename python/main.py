@@ -21,14 +21,6 @@ import requests
 from bazaar import SkyblockItems
 
 
-PLAYSTYLES = [
-    "enchanted_hopper", # you will check the minion less than once a month
-    "idle", # you will idle on your island to activate the crystal and 
-    "idle_non_minion_spawning", # you afk on your island and you 
-    "non_minion_harvest", # you farm the minion output yourself (why would you do this?...)
-    
-    "non_minion_spawning", "non_minion_harvest"]
-
 from minion_data import (
     MinionBase,
     MinionFuelType,
@@ -52,6 +44,73 @@ from item_data import (
     convert_to_super_compacted,
 )
 
+
+@dataclass
+class Playstyle:
+    short_name: str
+    name: str
+    eligible_minions: list[str]
+    one_cycle: bool = False
+
+# ["EH", "SA-CA", "SA-CC", "SA-FL", "ID-SS", "ID-SH", "AC-SH"]
+
+PLAYSTYLES:list[Playstyle] = [
+    # you will not check or load your minions. Profits will only be calculated using the enchanted hopper.
+    # IT IS POSSIBLE THAT CRYSTAL AND PET BONUS CAN BE CALCULATED AFK NOW
+    Playstyle("EH", "not active (enchanted hopper only)", ["all"]),
+    # applies to all combinations
+
+    # you will login before the third compaction level is reached
+    # if 3 levels exist e.g. iron, enchanted iron, enchanted iron block
+    # then we will create a combination that avoids ench iron block, and a setup that avoids enchanted iron
+    # to find the best coin/time compaction level item to sell to the bazaar
+    Playstyle("SA-CA", "semi-active (compactor avoid compaction)", ["all"]),
+    # applies only when compactor in items
+    
+    # similar to the above, but
+    # this case is specifically for compactor + corrupted soil
+    # because compacted items have priority over compacted items
+    # so it is possible to keep the compacted items, while corrupted soil outputs get sold by enchanted hopper
+    # to sell the second compaction level items to the bazaar
+    Playstyle("SA-CC", "semi-active (compactor avoid compaction and ehopper corrupted soil)", ["all"]),
+    # applies only when compactor/variants + corrupted soil in items
+    
+    # you will login before min(inventory_full, fuel_runs_out) 
+    # to sell the items to the bazaar
+    Playstyle("SA-FL", "semi-active (avoid full inventory/empty fuel)", ["all"]),
+    # applies to all combinations
+    
+    # you will idle on your island to activate the crystal and pet bonus if they exist for that minion
+    # skyblock should calculate this properly now
+    # Playstyle("idle (24/7)", ["all"]),
+    
+    
+    # you idle on your island and automate spawning (this doubles drops)
+    # this works for Melon, Pumpkin, Cobblestone, Ice, Mycelium, and Flowers
+    Playstyle("ID-SS", "idle (non-minion spawning)", ["Melon", "Pumpkin", "Cobblestone", "Ice", "Mycelium"], True),
+    # these can be safely ignored because these minions are dogwater regardless
+    
+    
+    # you idle on your island and automate harvesting (this doubles drops)
+    # to my knowledge, 
+    # this only works for flower minions
+    # (minions don't take drop damage, witherborn patched, etc)
+    Playstyle("ID-SH", "idle (non-minion harvest)", ["Flowers"], True),
+    
+    
+    # you harvest the minion output yourself (why would you do this?...)
+    # this is more nostalgia for the potato war days than out of any optimization opportunity
+    # combat: you would have to be in some sort of super niche situation
+    # farming: no farming fortune... and there is garden now
+    # farming: maybe helpful for some farming spawned minions??
+    # fishing: no, clay would barely work, fishing is not automable
+    # mining: absolutely not
+    # slayer: maybe? i doubt it
+    # foraging: no, bone meal farms exist
+    # Playstyle("AC-SH", "active (non-minion harvest)", ["clay"], True),
+    # unimplemented for now because its complicated and not useful for MVP
+]
+
 # DATA VALIDATION:
 for fuel in FUEL_TYPES:
     if fuel.name == "None":
@@ -65,9 +124,9 @@ for fuel in FUEL_TYPES:
 
 
 
-
 @dataclass
 class MinionOutputs:
+    # base info about the minion
     id: str
     playstyle: str
     minion: str
@@ -87,26 +146,120 @@ class MinionOutputs:
     calculated_seconds_per_action: float
     percentage_boost_total: int
     
+    # base minion outputs
     outputs_per_cycle: dict[str, float]
     outputs_per_day: dict[str, float]
-    total_output_per_day: dict[str, float]
-    total_money_per_day: dict[str, float]
-    compaction_level: int
     
+    total_output_per_day: dict[str, float]
+    
+    total_money_per_day_npc: dict[str, float]
+    total_money_per_day_bz: dict[str, float]
+    total_money_per_day_optimal: dict[str, float]
+    
+    # some calculated helpers
     hours_until_fuel_runs_out: None | int
     hours_until_inventory_full: int
     
-    fuel_cost_per_day: float
+    fuel_cost_per_day: None | float
     
-    revenue_per_day_npc: float # DOES NOT INCLUDE FUEL COST
-    revenue_per_day_bz: float # DOES NOT INCLUDE FUEL COST
     
-    revenue_per_day_ehopper: float = 0 # DOES NOT INCLUDE FUEL COST
-    profit_per_day_ehopper: float = 0 # includes fuel cost
+    
+    # playstyle specific values
+    EH_revenue_per_day_ehopper: None | float = None # DOES NOT INCLUDE FUEL COST
+    
+    SA_CA_compaction_level: None | int = None
+    SA_CA_hours_before_unwanted_compaction: None | float = None
+    
+    SA_CC_compaction_level: None | int = None
+    SA_CC_hours_before_unwanted_compaction: None | float = None
+    SA_CC_hours_before_non_fragsulphur_inventory_full: None | float = None
+    
+    SA_FL_hours_before_inventory_full: None | float = None
+    
+    # generated from playstyle:
+    total_output_per_day_compacted: dict[str, float] = {}
+    total_output_per_day_non_compacted: dict[str, float] = {}
+    
+    # depending on the playstyle, we will populate these differently
+    # EH sends all items to sold_to_ehopper
+    # semi-active compact avoid compaction 
+    sold_to_npc: dict[str, float] = {}
+    sold_to_bz_sell_order: dict[str, float] = {}
+    sold_to_bz_instant_sell: dict[str, float] = {}
+    sold_to_enchanted_hopper: dict[str, float] = {}
+    
+    # if island is loaded
+    # very quick (no compactor)
+    # before first compaction level is reached (e.g. enchanted iron)
+    # before second compaction level is reached (e.g. enchanted iron block)
+    # before fuel runs out
+    # before inventory is full
+    
+    # if island is not loaded
+    
+    
+    # collection_frequency:
+    # very quick (no compactor)
+    # 
+    # never (enchanted hopper)
+    
+    # values across playstyles
+    global_hours_until_non_optimal_output: None | float = None
+    global_revenue_per_day_optimal: None | float = None # DOES NOT INCLUDE FUEL COST
+    
+    
+    
+    
+    # playstyle("EH", "not active (enchanted hopper only)", ["all"]),
+    # applies to all combinations
+
+    # you will login before the third compaction level is reached
+    # if 3 levels exist e.g. iron, enchanted iron, enchanted iron block
+    # then we will create a combination that avoids ench iron block, and a setup that avoids enchanted iron
+    # to find the best coin/time compaction level item to sell to the bazaar
+    # Playstyle("SA-CA", "semi-active (compactor avoid compaction)", ["all"]),
+    # applies only when compactor in items
+    
+    # similar to the above, but
+    # this case is specifically for compactor + corrupted soil
+    # because compacted items have priority over compacted items
+    # so it is possible to keep the compacted items, while corrupted soil outputs get sold by enchanted hopper
+    # to sell the second compaction level items to the bazaar
+    # this will also create a unique combination for each compaction level
+    # Playstyle("SA-CC", "semi-active (compactor avoid compaction and ehopper corrupted soil)", ["all"]),
+    # applies only when compactor/variants + corrupted soil in items
+    
+    # you will login before min(inventory_full, fuel_runs_out) 
+    # to sell the items to the bazaar
+    # Playstyle("SA-FL", "semi-active (avoid full inventory/empty fuel)", ["all"]),
+    # applies to all combinations
+    
+    
+    # you idle on your island and automate spawning (this doubles drops)
+    # this works for Melon, Pumpkin, Cobblestone, Ice, Mycelium, and Flowers
+    # Playstyle("ID-SS", "idle (non-minion spawning)", ["Melon", "Pumpkin", "Cobblestone", "Ice", "Mycelium", "Flowers"], True),
+    
+    
+    # you idle on your island and automate harvesting (this doubles drops)
+    # to my knowledge, 
+    # this only works for flower minions
+    # (minions don't take drop damage, witherborn patched, etc)
+    # Playstyle("ID
+    
+    
+    
+    # min(fuel_runs_out, hours_until_compactor condition is no longer true)
+    SA_compaction_level: None | int = None
+    SA_hours_before_non_optimal_output: None | float = None
+    SA_revenue_per_day_optimal: None | float = None # DOES NOT INCLUDE FUEL COST
+    
+    ID_revenue_per_day_optimal: None | float = None # DOES NOT INCLUDE FUEL COST
+    
+    minion_cost: int = 0
 
     def clean_clamp(self):
-        self.revenue_per_day_ehopper = int(self.revenue_per_day_ehopper)
-        self.profit_per_day_ehopper = int(self.profit_per_day_ehopper)
+        if self.EH_revenue_per_day_ehopper:
+            self.EH_revenue_per_day_ehopper = int(self.EH_revenue_per_day_ehopper)
 
 
 
@@ -119,7 +272,7 @@ skyblock_items = SkyblockItems()
 """
 TBD: confirm that catalyst affects minion outputs, but not diamond spreadings outputs
 """
-def calculate_minion_outputs(minion:MinionBase, minion_level: int, playstyle:str, fuel:MinionFuelType, item_1:MinionItemType, item_2:MinionItemType, storage:MinionStorageType, mithril_infusion:bool, free_will:bool) -> MinionOutputs:
+def calculate_minion_outputs(minion:MinionBase, minion_level: int, playstyle:Playstyle, fuel:MinionFuelType, item_1:MinionItemType, item_2:MinionItemType, storage:MinionStorageType, mithril_infusion:bool, free_will:bool) -> MinionOutputs:
     hours_until_fuel_runs_out = -999999999999
     hours_until_inventory_full = -999999999999
     inventory_slots_required_for_crafting = 0
@@ -264,7 +417,7 @@ def calculate_minion_outputs(minion:MinionBase, minion_level: int, playstyle:str
     seconds_per_action = minion.levels[minion_level-1].seconds_per_action / multiplier
     
     seconds_per_harvest = seconds_per_action
-    if playstyle == "passive" or True:
+    if not playstyle.one_cycle:
         seconds_per_harvest *= 2 # because every minion has a spawning / harvesting action
     
     
@@ -274,12 +427,25 @@ def calculate_minion_outputs(minion:MinionBase, minion_level: int, playstyle:str
             total_output_per_day[output] = 0
         total_output_per_day[output] += outputs_per_cycle[output] * (86400 / seconds_per_harvest)
     
-    total_money_per_day = {}
+    total_money_per_day_npc = {}
     for output in total_output_per_day:
         item = skyblock_items.search_by_name(output)
         assert item
-        total_money_per_day[output] = f"${int(item.npc_sell_price * total_output_per_day[output])}"
-        
+        total_money_per_day_npc[output] = int(item.npc_sell_price * total_output_per_day[output])
+    
+    total_money_per_day_bz = {}
+    for output in total_output_per_day:
+        item = skyblock_items.search_by_name(output)
+        assert item
+        total_money_per_day_bz[output] = int(item.bz_buy_price * total_output_per_day[output])
+    
+    total_money_per_day_optimal = {}
+    for output in total_output_per_day:
+        item = skyblock_items.search_by_name(output)
+        assert item
+        total_money_per_day_optimal[output] = max(int(item.bz_buy_price * total_output_per_day[output]), int(item.npc_sell_price * total_output_per_day[output]))
+    
+    
     if fuel.duration_hours:
         hours_until_fuel_runs_out = fuel.duration_hours * 64
     else:
@@ -300,15 +466,13 @@ def calculate_minion_outputs(minion:MinionBase, minion_level: int, playstyle:str
     else:
         hours_until_inventory_full = 0
 
-    id = f"{minion.name}_{minion_level}_{playstyle}_{fuel.name}_{item_1.name}_{item_2.name}_{storage.name}_{mithril_infusion}_{free_will}"
+    id = f"{minion.name}_{minion_level}_{playstyle.short_name}_{fuel.name}_{item_1.name}_{item_2.name}_{storage.name}_{mithril_infusion}_{free_will}"
 
     # calculate expenses and costs:
     fuel_cost_per_day = None
     if fuel.duration_hours:
         fuel_cost_per_day = skyblock_items.search_by_name(fuel.name).bz_buy_price * (24 / fuel.duration_hours)
     
-    revenue_per_day_npc: float = 0 # DOES NOT INCLUDE FUEL COST
-    revenue_per_day_bz: float = 0 # DOES NOT INCLUDE FUEL COST
     
     # for output in outputs_per_day:
     #     item = skyblock_items.search_by_name(output)
@@ -316,23 +480,37 @@ def calculate_minion_outputs(minion:MinionBase, minion_level: int, playstyle:str
     #         revenue_per_day_npc += item.npc_price * outputs_per_day[output]
     #         revenue_per_day_bz += item.bazaar_sell_order_price * outputs_per_day[output
     
+    SA_hours_before_non_optimal_output = None
+    SA_revenue_per_day_optimal = None
+    if playstyle.short_name == "SA-FL":
+        # you will login before min(inventory_full, fuel_runs_out) 
+        # to sell the items to the bazaar
+        if hours_until_fuel_runs_out is None:
+            SA_hours_before_non_optimal_output = hours_until_inventory_full
+        else:
+            SA_hours_before_non_optimal_output = min(hours_until_inventory_full, hours_until_fuel_runs_out)
+        SA_revenue_per_day_optimal = 0
+        for output in total_output_per_day:
+            item = skyblock_items.search_by_name(output)
+            SA_revenue_per_day_optimal += item.npc_sell_price * total_output_per_day[output]
     
-    revenue_per_day_ehopper: float = 0
+    EH_revenue_per_day_ehopper= None
+    if playstyle.short_name == "EH":
+        EH_revenue_per_day_ehopper = 0
+        
+        for output in total_output_per_day:
+            item = skyblock_items.search_by_name(output)
+            EH_revenue_per_day_ehopper += item.npc_sell_price * total_output_per_day[output]
+        
+        EH_revenue_per_day_ehopper *= 0.90 # enchanted hopper has 90% efficiency
     
-    for output in total_output_per_day:
-        item = skyblock_items.search_by_name(output)
-        assert item
-        revenue_per_day_ehopper += item.npc_sell_price * total_output_per_day[output]
-    
-    revenue_per_day_ehopper *= 0.90 # enchanted hopper has 90% efficiency
-    
-    profit_per_day_ehopper = revenue_per_day_ehopper
-    if fuel_cost_per_day:
-        profit_per_day_ehopper -= fuel_cost_per_day
+    # profit_per_day_ehopper = revenue_per_day_ehopper
+    # if fuel_cost_per_day:
+    #     profit_per_day_ehopper -= fuel_cost_per_day
 
     return MinionOutputs(
         id=id,
-        playstyle=playstyle, 
+        playstyle=playstyle.short_name, 
         minion=minion.name, 
         minion_level=level,
         fuel=fuel.name, 
@@ -348,17 +526,23 @@ def calculate_minion_outputs(minion:MinionBase, minion_level: int, playstyle:str
         outputs_per_cycle=outputs_per_cycle,
         outputs_per_day=outputs_per_day,
         total_output_per_day=total_output_per_day,
-        total_money_per_day=total_money_per_day,
-        compaction_level=0,
+        total_money_per_day_npc=total_money_per_day_npc,
+        total_money_per_day_bz=total_money_per_day_bz,
+        total_money_per_day_optimal=total_money_per_day_optimal,
+        SA_compaction_level=None,
         hours_until_fuel_runs_out=hours_until_fuel_runs_out,
         hours_until_inventory_full=hours_until_inventory_full,
+        
+        # hours_until_player_action_required=0,
+        
         fuel_cost_per_day=fuel_cost_per_day,
         
-        revenue_per_day_npc=revenue_per_day_npc,
-        revenue_per_day_bz=revenue_per_day_bz,
+        # revenue_per_day_npc=revenue_per_day_npc,
+        # revenue_per_day_bz=revenue_per_day_bz,
+        SA_hours_before_non_optimal_output=SA_hours_before_non_optimal_output,
+        SA_revenue_per_day_optimal=SA_revenue_per_day_optimal,
         
-        revenue_per_day_ehopper=revenue_per_day_ehopper,
-        profit_per_day_ehopper=profit_per_day_ehopper
+        EH_revenue_per_day_ehopper=EH_revenue_per_day_ehopper,
     )
 
 
@@ -371,14 +555,9 @@ for minion in MINIONS:
     for playstyle in PLAYSTYLES: 
         
         # only go to the loop if the playstyle is valid for the minion
-        if playstyle == "passive":
-            pass
-        elif playstyle == "non_minion_spawning" and minion.non_minion_spawning_exists:
-            pass
-        elif playstyle == "non_minion_harvest" and minion.non_minion_harvest_exists:
-            pass
-        else:
-            continue
+        if playstyle.eligible_minions != ["all"]:
+            if minion.name not in playstyle.eligible_minions:
+                continue
         
         
         for fuel in FUEL_TYPES:
@@ -402,6 +581,25 @@ for minion in MINIONS:
                     if item_2.eligible_minions != ["all"]:
                         if minion.name not in item_2.eligible_minions:
                             continue
+                    
+                    # TODO: confirm this is true
+                    # you can't use dwarven super compactor + super compactor 3000
+                    # if item_1.name == "Super Compactor 3000" and item_2.name == "Dwarven Super Compactor" or item_1.name == "Dwarven Super Compactor" and item_2.name == "Super Compactor 3000":
+                    #     continue
+                    
+                    # the compactor playstyles are only valid with certain items
+                    # you will login before the third compaction level is reached
+                    
+                    if playstyle.short_name in ["SA-CA", "SA-CC", "SA-FL"]:
+                        if (not ("Compactor" in item_1.name)) and (not ("Compactor" in item_2.name)):
+                            continue
+                        
+                        if playstyle.short_name == "SA-CC":
+                            # there must be corrupted soil in the other item
+                            if not ("Corrupt Soil" in item_1.name) and not ("Corrupt Soil" in item_2.name):
+                                continue
+                    
+   
                     
                     
                     for storage in STORAGES:
@@ -444,7 +642,13 @@ def write_data(combinations):
                     if isinstance(v, float):
                         value[k] = round(v, 2)
         processed_combinations.append(c_dict)
-        
+    
+    # class SetEncoder(json.JSONEncoder):
+    #     def default(self, obj):
+    #         if isinstance(obj, set):
+    #             return list(obj)
+    #         return json.JSONEncoder.default(self, obj)
+    
     with open('data/sheep_minion_combinations.json', 'w') as f:
         json.dump(processed_combinations, f, indent=4)
 

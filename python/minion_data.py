@@ -11,6 +11,7 @@ class MinionFuelType:
     
 
 FUEL_TYPES = (
+    # None,
     # MinionFuelType("None", None, None, True),
     # MinionFuelType("Block of Coal", 5, 5, False),
     # MinionFuelType("Enchanted Bread", 12, 5, False),
@@ -49,6 +50,12 @@ class MinionItemType:
     can_stack: bool
     
     eligible_minions: list[str]
+    
+    def __repr__(self):
+        return self.name
+    
+    def __str__(self):
+        return self.name
     
 
 ITEMS = (
@@ -93,8 +100,8 @@ ITEMS = (
     
     # # minion specific 
     # MinionItemType("Enchanted Shears", None, True, False, ["Sheep"]),
-    MinionItemType("Enchanted Egg", None, True, False, ["Chicken"]),
-    MinionItemType("Flint Shovel", None, True, False, ["Gravel"]),
+    # MinionItemType("Enchanted Egg", None, True, False, ["Chicken"]),
+    # MinionItemType("Flint Shovel", None, True, False, ["Gravel"]),
 )
 
 
@@ -106,14 +113,21 @@ ITEMS = (
 class MinionStorageType:
     name: str
     inventory_slots: int
+    
+    def __repr__(self):
+        return self.name
+    
+    def __str__(self):
+        return self.name
 
-STORAGES = [
-    MinionStorageType("None", 0),
+STORAGES: list[None | MinionStorageType] = [
+    # None,
+    # MinionStorageType("None", 0),
     # MinionStorageType("Small", 3),
     # MinionStorageType("Medium", 9),
-    # MinionStorageType("Large", 15),
+    MinionStorageType("Large", 15),
     # MinionStorageType("X-Large", 21),
-    MinionStorageType("XX-Large", 27),
+    # MinionStorageType("XX-Large", 27),
 ]
 
 # THE MINIONS THEMSELVES
@@ -163,7 +177,13 @@ ISLAND_MODIFIERS = ["Derpy", "Postcard", "Beacon"]
 MINION_MODIFIERS = ["Mithril Infusion", "Free Will"]
 
 MINIONS = [
-    MinionBase("Sheep", "farming", False, False, False, True, 
+    MinionBase("Sheep", 
+        skill_type="farming",
+        crystal_exists=False, 
+        pet_boost_exists=False, 
+        non_minion_spawning_exists=False, 
+        non_minion_harvest_exists=True, 
+        
         levels = [
             MLC(1, 24, 2, {"Mutton": 64, "wooden sword": 1}, False),
             MLC(2, 24, 4, {"Mutton": 128}, None),
@@ -178,6 +198,7 @@ MINIONS = [
             MLC(11, 12, 15, {"Enchanted Cooked Mutton": 8}, None),
             MLC(12, 9, 15, {"Enchanted Cooked Mutton": 16, "Pelts": 75}, "Tony"),
         ],
+        
         actions = [
             MinionAction("spawn", None),
             MinionAction("harvest", [MinionDrop("Mutton", 1, 100), MinionDrop("White Wool", 1, 100)]),
