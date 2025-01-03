@@ -3,6 +3,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pageSize = 50; // Number of rows per page
     let currentPage = 1;
 
+    // Set initial state for calculations checkbox
+    const showCalculations = document.getElementById("show-calculations");
+    showCalculations.checked = false; // or true depending on desired default
+
+    // Trigger initial state
+    const event = new Event('change');
+    showCalculations.dispatchEvent(event);
+
+
     document.getElementById("apply-filters").addEventListener("click", () => {
         const filters = getFilters();
         currentPage = 1; // Reset to the first page
@@ -23,8 +32,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateTable(db, filters, currentPage, pageSize);
     });
 
-    // Initial table load
-    updateTable(db, getFilters(), currentPage, pageSize);
+    // Add to document.addEventListener("DOMContentLoaded", async () => {
+    // Run once with current checkbox state
+    const e = { target: document.getElementById("show-calculations") };
+    const calculationColumns = document.querySelectorAll('th.calculation-column, td.calculation-column');
+    calculationColumns.forEach(col => {
+        if (e.target.checked) {
+            col.classList.remove('hidden');
+        } else {
+            col.classList.add('hidden');
+        }
+    });
+
+// Initial table load
+updateTable(db, getFilters(), currentPage, pageSize);
 });
 
 function getFilters() {
@@ -83,7 +104,7 @@ function getFilters() {
         'Postcard': 'postcard',
         'Beacon': 'beacon',
         'Pet Bonus': 'pet',
-        'Crystal' : 'crystal',
+        'Crystal': 'crystal',
     };
 
     let upgrades = Object.entries(upgradeMappings)
@@ -138,7 +159,7 @@ function updateTable(db, filters, page, pageSize) {
     if (!filters.upgrades.includes("Postcard")) { query += ` AND postcard = 0`; }
     if (!filters.upgrades.includes("Beacon")) { query += ` AND beacon_boost_percent = 0`; }
     if (!filters.upgrades.includes("Pet Bonus")) { query += ` AND pet_bonus = 0`; }
-    if (!filters.upgrades.includes("Crystal")) { query += ` AND crystal = 0`};
+    if (!filters.upgrades.includes("Crystal")) { query += ` AND crystal = 0` };
 
 
     if (filters.sort) {
@@ -187,23 +208,45 @@ function fmtSeconds(seconds) {
     // }
 }
 
+
 function renderTable(result) {
+    const e = { target: document.getElementById("show-calculations") };
+    const calculationColumns = document.querySelectorAll('th.calculation-column, td.calculation-column');
+    calculationColumns.forEach(col => {
+        if (e.target.checked) {
+            col.classList.remove('hidden');
+        } else {
+            col.classList.add('hidden');
+        }
+    });
+    
     const tbody = document.querySelector("#results-table tbody");
     tbody.innerHTML = ""; // Clear existing rows
+    tbody.style.fontSize = '0.8em';
 
     if (!result) return;
 
     result.values.forEach(row => {
         const tr = document.createElement("tr");
         let i = 0;
-        row.forEach(cell => {
+        const showCalculations = document.getElementById("show-calculations").checked;
+        const calculationIndexes = [16, 17, 18, 19, 20, 21, 22, 23, 24];
+
+        row.forEach((cell, index) => {
             const td = document.createElement("td");
+            if (calculationIndexes.includes(index)) {
+                td.classList.add('calculation-column');
+                if (!showCalculations) {
+                    td.classList.add('hidden');
+                }
+            }
+
             if (i == 0) {
                 // td.style.fontSize = '0.8em';
                 td.textContent = cell;
             } else if (i > 7 && i < 11 || i == 30 || i == 31) {
                 td.textContent = cell === 0 ? "" : "T"
-            } else if (i == 11 || i==12 || i==13 || i == 15) {
+            } else if (i == 11 || i == 12 || i == 13 || i == 15) {
                 td.textContent = cell == 0 ? "" : cell + "%"
             } else if (i > 18 && i < 30 || i == 32) {
                 td.textContent = fmtMoney(cell);
@@ -217,7 +260,7 @@ function renderTable(result) {
             }
 
             if (i == 26 || i == 29) {
-            td.style.backgroundColor = '#90EE90';
+                td.style.backgroundColor = '#90EE90';
             }
 
             tr.appendChild(td);

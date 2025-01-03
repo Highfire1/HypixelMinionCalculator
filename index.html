@@ -9,31 +9,34 @@
 </head>
 
 <body>
-    <h1>Hypixel Minion Combination Explorer</h1>
+    <h1 style="margin-bottom: 0px;">Hypixel Minion Combination Explorer</h1>
+    <p style="margin-top: 0px;">Made by Highfire1. More info <a href="https://github.com/Highfire1/HypixelMinionCalculator">here</a>.</p>
 
     <div id="filters" style="display: flex; flex-direction: column; gap: 10px;">
-        <div>
+        <div style="font-size: 1.2em;">
             <label for="minion">Minion:</label>
-            <select id="minion">
+            <select id="minion" style="font-size: 1.05em;">
                 <option value="All">All</option>
                 <option value="Sheep">Sheep</option>
                 <option value="Slime">Slime</option>
             </select>
         </div>
 
-        <div>
+        <div style="font-size: 1.2em;">
             <label for="sort-column">Sort By:</label>
-            <select id="sort-column">
+            <select id="sort-column" style="font-size: 1.05em;">
                 <option value="profit_24h_only_hopper">PROFIT/DAY (hopper only)</option>
-                <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz + hopper)</option>
-                <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell, sell_order, npc_price) + hopper)</option>
+                <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz + hopper)
+                </option>
+                <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell,
+                    sell_order, npc_price) + hopper)</option>
                 <!-- <option value="hopper_coins">Hopper Coins (NOT PROFIT)</option> -->
                 <option value="percentage_boost">Percentage Boost</option>
                 <option value="id">id</option>
             </select>
 
             <label for="sort-order">Order:</label>
-            <select id="sort-order">
+            <select id="sort-order" style="font-size: 1.05em;">
                 <option value="DESC">High → Low</option>
                 <option value="ASC">Low → High</option>
             </select>
@@ -107,7 +110,7 @@
 
         <div>
             <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Minion Upgrades:</p>
-            
+
             <label for="upgrade-mithril-infusion"
                 style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                 <span>Mithril Infusion:</span>
@@ -205,10 +208,21 @@
             </label>
         </div>
 
+        <!-- Add after the filters div, before apply filters button -->
+        <div>
+            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Misc:</p>
+
+            <label for="show-calculations"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Show Detailed Calculations:</span>
+                <input type="checkbox" id="show-calculations">
+            </label>
+        </div>
+
     </div>
 
 
-    <button id="apply-filters" style="width: fit-content;">Apply Filters</button>
+    <button id="apply-filters" style="width: fit-content; font-size:1.05em">Apply Filters</button>
     </div>
 
 
@@ -231,15 +245,15 @@
                 <th style="font-size: 0.75em;">Crystal Bonus</th>
                 <th>Sim. Time</th>
                 <th>Minion Speed</th>
-                <th >Raw Drops</th>
-                <th>Stored Items</th>
-                <th>Sold to Hopper</th>
-                <th>Hopper Coins</th>
-                <th>Fuel Cost</th>
-                <th>Inv. BZ Sell Order</th>
-                <th>Inv. BZ Instant Sell</th>
-                <th>Inv. NPC Sell</th>
-                <th>Inv. Optimal Sell</th>
+                <th class="calculation-column">Raw Drops</th>
+                <th class="calculation-column">Stored Items</th>
+                <th class="calculation-column">Sold to Hopper</th>
+                <th class="calculation-column">Hopper Coins</th>
+                <th class="calculation-column">Fuel Cost</th>
+                <th class="calculation-column">Inv. BZ Sell Order</th>
+                <th class="calculation-column">Inv. BZ Instant Sell</th>
+                <th class="calculation-column">Inv. NPC Sell</th>
+                <th class="calculation-column">Inv. Optimal Sell</th>
                 <th>PROFIT/DAY (inventory→ bz sell order + hopper)</th>
                 <th>PROFIT/DAY (inventory→ bz instant sell + hopper)</th>
                 <th>PROFIT/DAY (inventory→ npc sell + hopper)</th>
