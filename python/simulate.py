@@ -198,6 +198,12 @@ class MinionSimulationOutput:
     coins_if_inventory_sold_to_npc: int
     coins_if_inventory_sold_optimally: int
     
+    profit_24h_if_inventory_sell_order_to_bz: int
+    profit_24h_if_inventory_instant_sold_to_bz: int
+    profit_24h_if_inventory_sold_to_npc: int
+    profit_24h_if_inventory_sold_optimally: int
+    profit_24h_only_hopper: int
+    
     # total_coins_if_sell_order_to_bz: int
     # total_coins_if_instant_sold_to_bz: int
     # total_coins_if_sold_optimally: int
@@ -206,6 +212,7 @@ class MinionSimulationOutput:
     inventory_full: bool
     fuel_empty: bool
     
+    minion_cost: int
     # coins_per_day: int
     
 class MinionSimulationResult(SQLModel, table=True):
@@ -231,22 +238,35 @@ class MinionSimulationResult(SQLModel, table=True):
     in_inventory: str #dict[str, int]
     sold_to_hopper: str #dict[str, int]
     hopper_coins: int
+    cost_of_fuel: int
     
     coins_if_inventory_sell_order_to_bz: int 
     coins_if_inventory_instant_sold_to_bz: int
     coins_if_inventory_sold_to_npc: int
     coins_if_inventory_sold_optimally: int
     
-    cost_of_fuel: int
+    profit_24h_if_inventory_sell_order_to_bz: int
+    profit_24h_if_inventory_instant_sold_to_bz: int
+    profit_24h_if_inventory_sold_to_npc: int
+    profit_24h_if_inventory_sold_optimally: int
+    profit_24h_only_hopper: int
+    
     inventory_full: bool
     fuel_empty: bool
+    
+    minion_cost: int
 
 skyblock_items = SkyblockItems()
 
-
+# NOTE: this calculation is only valid while the island is UNLOADED
+# two main reason for this is corrupted soil
+# there are some weird interactions
+# A: catalyst works on sulphur/frag only when the island is unloaded
+# B: compacted items get placed in inventory BEFORE corrupted fragments
 def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel: None | MinionFuelType, hopper: None | MinionHopperType, item_1:None | MinionItemType, item_2:None | MinionItemType, storage: None | MinionStorageType, mithril_infusion: bool, free_will: bool, postcard:bool, beacon_percent_boost: int, seconds: int, minionInventory=None) -> MinionSimulationOutput:
     
     outputs_per_cycle:dict[str, float] = {}
+    outputs_per_cycle_not_multiplied:dict[str, float] = {}
     outputs_per_day:dict[str, float] = {}
     minion_speed_percentage = 100
     
@@ -265,7 +285,9 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     assert beacon_percent_boost in [0, 10, 11] # idc about lower level beacons
     if beacon_percent_boost: minion_speed_percentage += beacon_percent_boost
     
+    
     # handle fuel
+    # ASSUMPTION: you will put in 64 fuel at a time
     if fuel == None:
         pass
     
@@ -302,25 +324,22 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
                 minion_speed_percentage += item.percentage_boost
         
         elif item.name == "Diamond Spreading":
-            # one diamond is generated for every 10 items (on average)
+            # one diamond is generated for every 10 items (on average) (only 1 per minion)
             # TODO: verify double diamond spreading calculation
             # drops are not affected by cheese/catalyst/hypercatalyst
-            if item_1 == item_2: # if there are two diamond spreadings
-                outputs_per_cycle["Diamond"] = ( sum(outputs_per_cycle.values()) / 10 ) * 2
-            else:
-                outputs_per_cycle["Diamond"] = sum(outputs_per_cycle.values()) / 10
+            outputs_per_cycle_not_multiplied["Diamond"] = sum(outputs_per_cycle.values()) / 10
         
         # TODO: check if lesser soulflow and soulflow engine can stack
     
         elif item.name == "Lesser Soulflow Engine":
             minion_speed_percentage = minion_speed_percentage*0.5 # IS THIS CORRECT???
             # one soulflow is generated every 3 minutes (180 seconds)
-            outputs_per_day["soulflow"] = 86400/180 # (480 soulflow/day)
+            outputs_per_cycle_not_multiplied["soulflow"] = 86400/180 # (480 soulflow/day)
         
         elif item.name == "Soulflow Engine":
             minion_speed_percentage = minion_speed_percentage*0.5 # IS THIS CORRECT???
             # one soulflow is generated every 1.5 minutes (90 seconds)
-            outputs_per_day["Soulflow"] = 86400/90 # (960 soulflow/day)
+            outputs_per_cycle_not_multiplied["Soulflow"] = 86400/90 # (960 soulflow/day)
             if minion.name == "Voidling":
                 minion_speed_percentage += (3 * minion_level)
         
@@ -386,8 +405,10 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     
     seconds_per_cycle = (minion.levels[minion_level-1].seconds_per_action) * 2
     
+    time_period_1 = min(seconds)
+    
     for item in outputs_per_cycle:
-        items_generated = seconds / (seconds_per_cycle / (minion_speed_percentage/100))
+        items_generated = time_period_1 / (seconds_per_cycle / (minion_speed_percentage/100))
         item_drops[item] = floor(items_generated) 
         
     
@@ -488,12 +509,12 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     # ASSUMPTION: you have 29 minion slots.
     # yes, the cap is 31 but that requires grinding slayer and nether and pelts
     # treat it as some extra cash
+    MINION_COUNT = 29
     if beacon_percent_boost:
         if beacon_percent_boost % 2 == 0:
             crystal = skyblock_items.search_by_name("Power Crystal")
         else:
             crystal = skyblock_items.search_by_name("Scorched Power Crystal")
-        MINION_COUNT = 29
         crystal_cost_24hrs_per_minion = (crystal.bz_sell_price / 2) / MINION_COUNT
         cost_of_fuel += crystal_cost_24hrs_per_minion * (seconds / 86400)
         
@@ -530,13 +551,42 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         coins_if_inventory_sold_optimally += max(npc, instant_sell, sell_order)
     
     # coins_per_day = int(((coins_if_inventory_sold_to_npc+hopper_money) / seconds) * 86400)
+    # generate profit per day
+    profit_24h_if_inventory_sold_to_npc = int(((coins_if_inventory_sold_to_npc+hopper_money-cost_of_fuel) / seconds) * 86400)
+    profit_24h_if_inventory_instant_sold_to_bz = int(((coins_if_inventory_instant_sold_to_bz+hopper_money-cost_of_fuel) / seconds) * 86400)
+    profit_24h_if_inventory_sell_order_to_bz = int(((coins_if_inventory_sell_order_to_bz+hopper_money-cost_of_fuel) / seconds) * 86400)
+    profit_24h_if_inventory_sold_optimally = int(((coins_if_inventory_sold_optimally+hopper_money-cost_of_fuel) / seconds) * 86400)
+    profit_24h_only_hopper = int(hopper_money / seconds * 86400)
     
     # some other stuff
     inventory_full = not_put_in_inventory != {}
     
+    # generate minion cost taking into account minion level materials, items, hopper, and postcard
+    setup_cost = 0
+    for item, amount in minion.levels[minion_level-1].items.items():
+        if "Wooden" in item:
+            continue
+        if "Pelts" in item: # yes pelts have value (3m?) but frankly i don't think it matters that much
+            continue 
+        sb_item = skyblock_items.search_by_name(item)
+        setup_cost += sb_item.bz_sell_price * amount
+        
+    if hopper: setup_cost += skyblock_items.search_by_name(hopper.name).bz_sell_price
+    if item_1: setup_cost += skyblock_items.search_by_name(item_1.name).bz_sell_price
+    if item_2: setup_cost += skyblock_items.search_by_name(item_2.name).bz_sell_price
+    # yes it's not a 100% chance but it's close enough and idc
+    if free_will: setup_cost += skyblock_items.search_by_name("Free Will").bz_sell_price
+    
+    # yes the price fluctuates but i don't want to learn the coflnet api for this
+    if postcard: setup_cost += (80 * 1000000) / MINION_COUNT # 80m / 29 minions
+    
+    # generate cash / day
+    
+    
     # clamp data to int because a fraction of a coin is not. relevant.
     cost_of_fuel = int(cost_of_fuel)
     hopper_money = int(hopper_money)
+    setup_cost = int(setup_cost)
     
     coins_if_inventory_instant_sold_to_bz = int(coins_if_inventory_instant_sold_to_bz)
     coins_if_inventory_sell_order_to_bz = int(coins_if_inventory_sell_order_to_bz)
@@ -558,6 +608,12 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         coins_if_inventory_sold_to_npc=coins_if_inventory_sold_to_npc,
         coins_if_inventory_sold_optimally=coins_if_inventory_sold_optimally,
         
+        profit_24h_if_inventory_sell_order_to_bz=profit_24h_if_inventory_sell_order_to_bz,
+        profit_24h_if_inventory_instant_sold_to_bz=profit_24h_if_inventory_instant_sold_to_bz,
+        profit_24h_if_inventory_sold_to_npc=profit_24h_if_inventory_sold_to_npc,
+        profit_24h_if_inventory_sold_optimally=profit_24h_if_inventory_sold_optimally,
+        profit_24h_only_hopper=profit_24h_only_hopper,
+        
         # total_coins_if_sell_order_to_bz=0,
         # total_coins_if_instant_sold_to_bz=0,
         # total_coins_if_sold_optimally=0,
@@ -566,6 +622,8 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         
         inventory_full=inventory_full,
         fuel_empty=fuel_empty,
+        
+        minion_cost=setup_cost,
         
         # coins_per_day=coins_per_day,
     )
@@ -688,9 +746,15 @@ for minion in MINIONS:
                                                     coins_if_inventory_instant_sold_to_bz=sim.coins_if_inventory_instant_sold_to_bz,
                                                     coins_if_inventory_sold_to_npc=sim.coins_if_inventory_sold_to_npc,
                                                     coins_if_inventory_sold_optimally=sim.coins_if_inventory_sold_optimally,
+                                                    profit_24h_if_inventory_sell_order_to_bz=sim.profit_24h_if_inventory_sell_order_to_bz,
+                                                    profit_24h_if_inventory_instant_sold_to_bz=sim.profit_24h_if_inventory_instant_sold_to_bz,
+                                                    profit_24h_if_inventory_sold_to_npc=sim.profit_24h_if_inventory_sold_to_npc,
+                                                    profit_24h_if_inventory_sold_optimally=sim.profit_24h_if_inventory_sold_optimally,
+                                                    profit_24h_only_hopper=sim.profit_24h_only_hopper,
                                                     cost_of_fuel=sim.cost_of_fuel,
                                                     inventory_full=sim.inventory_full,
                                                     fuel_empty=sim.fuel_empty,
+                                                    minion_cost=sim.minion_cost,
                                                 )
                                                 
                                                 simulation_outputs.append(a)

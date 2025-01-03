@@ -1,29 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Hypixel Sheep Minion Calculator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hypixel Minion Data</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>Hypixel Sheep Minion Combinations</h1>
-        <div id="info"></div>
-        <table id="minionsTable">
-            <thead>
-                <tr></tr>
-            </thead>
-            <tbody id="minionData"></tbody>
-        </table>
-        <table id="minionsTable">
-            <h2>LOADING TABLE...</h2>
-            <thead>
-            </thead>
-            <tbody id="minionData"></tbody>
-        </table>
+    <h1>Hypixel Minion Data</h1>
+
+    <div id="filters" style="display: flex; flex-direction: column; gap: 20px;">
+        <div>
+            <label for="minion">Minion:</label>
+            <select id="minion">
+                <option value="Sheep">Sheep</option>
+                <option value="Slime">Slime</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="sort-column">Sort By:</label>
+            <select id="sort-column">
+                <option value="hopper_coins">Hopper Coins</option>
+                <option value="profit_24h_if_inventory_instant_sold_to_bz">Daily Profit (sell to bazaar)</option>
+                <option value="percentage_boost">Percentage Boost</option>
+                <option value="profit_24h_if_inventory_sell_order_to_bz">Inventory Value</option>
+            </select>
+
+            <label for="sort-order">Order:</label>
+            <select id="sort-order">
+                <option value="ASC">Ascending</option>
+                <option value="DESC">Descending</option>
+            </select>
+
+            <!-- <label for="free-will">Exclude Free Will:</label>
+            <input type="checkbox" id="free-will"> -->
+        </div>
+
+
+        <!-- HIDE -->
+        <div>
+            <p style="padding-top: 10px;">Included timescales:</p>
+
+            <label for="seconds-300"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>5m:</span>
+                <input type="checkbox" id="seconds-300">
+            </label>
+
+            <label for="seconds-3600"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>1h:</span>
+                <input type="checkbox" id="seconds-3600">
+            </label>
+
+            <label for="seconds-21600"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>6h:</span>
+                <input type="checkbox" id="seconds-21600">
+            </label>
+
+            <label for="seconds-43200"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>12h:</span>
+                <input type="checkbox" id="seconds-43200">
+            </label>
+
+            <label for="seconds-86400"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>24h:</span>
+                <input type="checkbox" id="seconds-86400" checked>
+            </label>
+
+            <label for="seconds-172800"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>48h:</span>
+                <input type="checkbox" id="seconds-172800">
+            </label>
+
+            <label for="seconds-604800"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>7d:</span>
+                <input type="checkbox" id="seconds-604800" checked>
+            </label>
+
+            <label for="seconds-1209600"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>14d:</span>
+                <input type="checkbox" id="seconds-1209600">
+            </label>
+
+            <label for="seconds-31536000"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>1y:</span>
+                <input type="checkbox" id="seconds-31536000" checked>
+            </label>
+        </div>
+
     </div>
-    <script src="main.js"></script>
+
+
+    <button id="apply-filters" style="width: fit-content;">Apply Filters</button>
+    </div>
+
+
+    <table id="results-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Minion</th>
+                <th>Level</th>
+                <th>Fuel</th>
+                <th>Shipping</th>
+                <th>Item 1</th>
+                <th>Item 2</th>
+                <th>Storage Type</th>
+                <th>Mithril Infusion</th>
+                <th>Free Will</th>
+                <th>Postcard</th>
+                <th>Beacon Boost</th>
+                <th>Seconds</th>
+                <th>Percentage Boost</th>
+                <th>Raw Drops</th>
+                <th>In Inventory</th>
+                <th>Sold to Hopper</th>
+                <th>Hopper Coins</th>
+                <th>Fuel Cost</th>
+                <th>Inv. BZ Sell Order</th>
+                <th>Inv. BZ Instant Sell</th>
+                <th>Inv. NPC Sell</th>
+                <th>Inv. Optimal Sell</th>
+                <th>profit coins/day (inventory->bz sell order + ehopper)</th>
+                <th>profit coins/day (inventory->bz instant sell + ehopper)</th>
+                <th>profit coins/day (inventory->npc sell + ehopper)</th>
+                <th>profit coins/day (inventory->optimal sell + ehopper)</th>
+                <th>profit coins/day (ehopper ONLY)</th>
+                <th>Inventory Full</th>
+                <th>Fuel Empty</th>
+                <th>Minion Cost</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div id="pagination-controls">
+        <button id="prev-page">Previous</button>
+        <span id="current-page">Page 1</span>
+        <button id="next-page">Next</button>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

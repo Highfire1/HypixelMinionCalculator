@@ -59,6 +59,7 @@ SUPER_COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "Mutton": ItemCompactor("Mutton", 160, "Enchanted Mutton"),
     "Enchanted Mutton": ItemCompactor("Enchanted Mutton", 160, "Enchanted Cooked Mutton"),
     "White Wool": ItemCompactor("White Wool", 160, "Enchanted Wool"),
+    "Sulphur": ItemCompactor("Sulphur", 160, "Enchanted Sulphur"),
 }
 
 

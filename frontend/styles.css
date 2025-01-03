@@ -1,47 +1,24 @@
-/* Add to existing CSS */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+#filters {
+    margin-bottom: 20px;
+}
+
 table {
-    overflow-x: auto;
-    white-space: nowrap;
+    width: 100%;
     border-collapse: collapse;
+    margin-top: 10px;
 }
 
-th {
-    /* min-width: 100px; */
-    padding-left: 4px;
-    padding-right: 4px;
-    text-align: center;
-    background-color: #f2f2f2;
-}
-
-td {
-    text-align: right;
+th, td {
+    border: 1px solid #ddd;
     padding: 8px;
-}
-
-td:nth-child(-n+6) {
     text-align: left;
 }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-tr:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-.item-stats {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.items-per-day {
-    font-weight: bold;
-}
-
-.revenue {
-    color: #2e7d32;
-    font-size: 0.9em;
+th {
+    background-color: #f4f4f4;
 }

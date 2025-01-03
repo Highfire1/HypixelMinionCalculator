@@ -66,7 +66,7 @@ ITEMS = (
     MinionItemType("Flycatcher", 20, False, True, ["all"]),
     
     # New items:
-    MinionItemType("Diamond Spreading", None, True, True, ["all"]),
+    MinionItemType("Diamond Spreading", None, True, False, ["all"]),
     # MinionItemType("Lesser Soulflow Engine", None, True, False, ["all"]),
     # MinionItemType("Soulflow Engine", None, True, False, ["all"]),
     
@@ -185,7 +185,7 @@ MINIONS = [
         non_minion_harvest_exists=True, 
         
         levels = [
-            MLC(1, 24, 2, {"Mutton": 64, "wooden sword": 1}, False),
+            MLC(1, 24, 2, {"Mutton": 64, "Wooden Sword": 1}, False),
             MLC(2, 24, 4, {"Mutton": 128}, None),
             MLC(3, 22, 4, {"Mutton": 256}, None),
             MLC(4, 22, 6, {"Mutton": 512}, None),
@@ -208,7 +208,7 @@ MINIONS = [
     
     # MinionBase("cobblestone", "mining", False, False, False, True,
     #     levels = [
-    #         MLC(1, 14, 64/64, {"cobblestone": 80, "wooden_pickaxe": 1}, None),
+    #         MLC(1, 14, 64/64, {"cobblestone": 80, "Wooden_pickaxe": 1}, None),
     #         MLC(2, 14, 192/64, {"cobblestone": 160}, None),
     #         MLC(3, 12, 192/64, {"cobblestone": 320}, None),
     #         MLC(4, 12, 384/64, {"cobblestone": 512}, None),
