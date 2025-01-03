@@ -4,17 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hypixel Minion Data</title>
+    <title>Hypixel Minion Combination Explorer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <h1>Hypixel Minion Data</h1>
+    <h1>Hypixel Minion Combination Explorer</h1>
 
-    <div id="filters" style="display: flex; flex-direction: column; gap: 20px;">
+    <div id="filters" style="display: flex; flex-direction: column; gap: 10px;">
         <div>
             <label for="minion">Minion:</label>
             <select id="minion">
+                <option value="All">All</option>
                 <option value="Sheep">Sheep</option>
                 <option value="Slime">Slime</option>
             </select>
@@ -23,26 +24,131 @@
         <div>
             <label for="sort-column">Sort By:</label>
             <select id="sort-column">
-                <option value="hopper_coins">Hopper Coins</option>
-                <option value="profit_24h_if_inventory_instant_sold_to_bz">Daily Profit (sell to bazaar)</option>
+                <option value="profit_24h_only_hopper">PROFIT/DAY (hopper only)</option>
+                <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz + hopper)</option>
+                <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell, sell_order, npc_price) + hopper)</option>
+                <!-- <option value="hopper_coins">Hopper Coins (NOT PROFIT)</option> -->
                 <option value="percentage_boost">Percentage Boost</option>
-                <option value="profit_24h_if_inventory_sell_order_to_bz">Inventory Value</option>
+                <option value="id">id</option>
             </select>
 
             <label for="sort-order">Order:</label>
             <select id="sort-order">
-                <option value="ASC">Ascending</option>
-                <option value="DESC">Descending</option>
+                <option value="DESC">High → Low</option>
+                <option value="ASC">Low → High</option>
             </select>
 
             <!-- <label for="free-will">Exclude Free Will:</label>
             <input type="checkbox" id="free-will"> -->
         </div>
 
+        <div>
+            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Fuels:</p>
+
+            <label for="fuel-enchanted-lava-bucket"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Enchanted Lava Bucket:</span>
+                <input type="checkbox" id="fuel-enchanted-lava-bucket">
+            </label>
+
+            <label for="fuel-magma-bucket"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Magma Bucket:</span>
+                <input type="checkbox" id="fuel-magma-bucket">
+            </label>
+
+            <label for="fuel-plasma-bucket"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Plasma Bucket:</span>
+                <input type="checkbox" id="fuel-plasma-bucket" checked>
+            </label>
+
+            <label for="fuel-everburning-flame"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Everburning Flame:</span>
+                <input type="checkbox" id="fuel-everburning-flame">
+            </label>
+
+            <br>
+
+            <label for="fuel-hamster-wheel"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Hamster Wheel:</span>
+                <input type="checkbox" id="fuel-hamster-wheel" checked>
+            </label>
+
+            <label for="fuel-foul-flesh"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Foul Flesh:</span>
+                <input type="checkbox" id="fuel-foul-flesh" checked>
+            </label>
+
+            <br>
+
+            <label for="fuel-tasty-cheese"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Tasty Cheese:</span>
+                <input type="checkbox" id="fuel-tasty-cheese" checked>
+            </label>
+
+            <label for="fuel-catalyst"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Catalyst:</span>
+                <input type="checkbox" id="fuel-catalyst" checked>
+            </label>
+
+            <label for="fuel-hyper-catalyst"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Hyper Catalyst:</span>
+                <input type="checkbox" id="fuel-hyper-catalyst" checked>
+            </label>
+
+        </div>
+
+        <div>
+            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Minion Upgrades:</p>
+            
+            <label for="upgrade-mithril-infusion"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Mithril Infusion:</span>
+                <input type="checkbox" id="upgrade-mithril-infusion" checked>
+            </label>
+
+            <label for="upgrade-free-will"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Free Will:</span>
+                <input type="checkbox" id="upgrade-free-will">
+            </label>
+
+            <label for="upgrade-postcard"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Postcard:</span>
+                <input type="checkbox" id="upgrade-postcard" checked>
+            </label>
+
+            <label for="upgrade-beacon"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Beacon:</span>
+                <input type="checkbox" id="upgrade-beacon" checked>
+            </label>
+
+            <label for="upgrade-pet"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Pet Bonus:</span>
+                <input type="checkbox" id="upgrade-pet" checked>
+            </label>
+
+            <label for="upgrade-crystal"
+                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                <span>Crystal:</span>
+                <input type="checkbox" id="upgrade-crystal" checked>
+            </label>
+        </div>
+
 
         <!-- HIDE -->
         <div>
-            <p style="padding-top: 10px;">Included timescales:</p>
+            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Simulated time lengths:</p>
 
             <label for="seconds-300"
                 style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
@@ -111,20 +217,22 @@
             <tr>
                 <th>ID</th>
                 <th>Minion</th>
-                <th>Level</th>
+                <th>Lvl.</th>
                 <th>Fuel</th>
                 <th>Shipping</th>
                 <th>Item 1</th>
                 <th>Item 2</th>
                 <th>Storage Type</th>
-                <th>Mithril Infusion</th>
-                <th>Free Will</th>
-                <th>Postcard</th>
-                <th>Beacon Boost</th>
-                <th>Seconds</th>
-                <th>Percentage Boost</th>
-                <th>Raw Drops</th>
-                <th>In Inventory</th>
+                <th style="font-size: 0.75em;">Mithril Infusn.</th>
+                <th style="font-size: 0.75em;">Free Will</th>
+                <th style="font-size: 0.75em;">Post-card</th>
+                <th style="font-size: 0.75em;">Beacon Boost</th>
+                <th style="font-size: 0.75em;">Pet Bonus</th>
+                <th style="font-size: 0.75em;">Crystal Bonus</th>
+                <th>Sim. Time</th>
+                <th>Minion Speed</th>
+                <th >Raw Drops</th>
+                <th>Stored Items</th>
                 <th>Sold to Hopper</th>
                 <th>Hopper Coins</th>
                 <th>Fuel Cost</th>
@@ -132,13 +240,13 @@
                 <th>Inv. BZ Instant Sell</th>
                 <th>Inv. NPC Sell</th>
                 <th>Inv. Optimal Sell</th>
-                <th>profit coins/day (inventory->bz sell order + ehopper)</th>
-                <th>profit coins/day (inventory->bz instant sell + ehopper)</th>
-                <th>profit coins/day (inventory->npc sell + ehopper)</th>
-                <th>profit coins/day (inventory->optimal sell + ehopper)</th>
-                <th>profit coins/day (ehopper ONLY)</th>
-                <th>Inventory Full</th>
-                <th>Fuel Empty</th>
+                <th>PROFIT/DAY (inventory→ bz sell order + hopper)</th>
+                <th>PROFIT/DAY (inventory→ bz instant sell + hopper)</th>
+                <th>PROFIT/DAY (inventory→ npc sell + hopper)</th>
+                <th>PROFIT/DAY (inventory→ optimal sell + hopper)</th>
+                <th>PROFIT/DAY (hopper ONLY)</th>
+                <th>Inventory Full?</th>
+                <th>Fuel Empty?</th>
                 <th>Minion Cost</th>
             </tr>
         </thead>

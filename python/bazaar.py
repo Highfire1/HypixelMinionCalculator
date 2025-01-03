@@ -44,11 +44,19 @@ class SBItem:
     bz_weekly_buy_volume: Optional[int]
     npc_sell_price: Optional[int]
     
+    auction_average_buy_price: Optional[int] = None
+    
+    def lowest_price(self) -> int:
+        if self.bz_sell_price is not None:
+            return self.bz_sell_price
+        if self.auction_average_buy_price is not None:
+            return self.auction_average_buy_price
+        raise ValueError(f"Item '{self.name}' has no price data")
 
 class SkyblockItems:
-    def __init__(self):
+    def __init__(self, only_bazaar=True):
         self.bazaar_data = self.fetch_bazaar_data()
-        self.items = self.fetch_items()
+        self.items = self.fetch_items(only_bazaar)
 
     def fetch_items(self, only_bazaar=True) -> List[SBItem]:
         response = requests.get("https://api.hypixel.net/v2/resources/skyblock/items")
@@ -97,6 +105,29 @@ class SkyblockItems:
     def export_to_json(self, filepath: str):
         with open(filepath, 'w') as f:
             json.dump([item.__dict__ for item in self.items], f, indent=4)
+    
+    def attempt_fetch_auction_data(self, item: SBItem):
+        if item.auction_average_buy_price is not None:
+            return
+        assert item.bz_buy_price == None
+        
+        response = requests.get(f"https://sky.coflnet.com/api/auctions/tag/{item.sb_id}/active/overview")
+        data = response.json()
+        
+        if response.status_code != 200:
+            raise ValueError(f"Failed to fetch auction data for item '{item.name}'")
+        
+        total = 0
+        
+        for auction in data:
+            total += auction["price"]
+        
+        avg = int(total / len(data))
+        item.auction_average_buy_price = avg
+        
+        print(f"Fetched auction data for '{item.name}' (${item.auction_average_buy_price}) from cofl.net")
+    
+    
 
 # Example usage:
 skyblock_items = SkyblockItems()

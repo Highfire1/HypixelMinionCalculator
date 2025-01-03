@@ -229,7 +229,9 @@ class MinionSimulationResult(SQLModel, table=True):
     mithril_infusion: bool
     free_will: bool
     postcard: bool 
-    beacon_percent_boost: int
+    beacon_boost_percent: int
+    pet_bonus_percent: int
+    crystal_bonus_percent: int
     
     seconds: int
     percentage_boost: int
@@ -256,14 +258,16 @@ class MinionSimulationResult(SQLModel, table=True):
     
     minion_cost: int
 
-skyblock_items = SkyblockItems()
+skyblock_items = SkyblockItems(only_bazaar=False)
+
+MINIONS.reverse()
 
 # NOTE: this calculation is only valid while the island is UNLOADED
 # two main reason for this is corrupted soil
 # there are some weird interactions
-# A: catalyst works on sulphur/frag only when the island is unloaded
+# A: catalyst works on corrupt soil/sulphur/frag BUT only when the island is unloaded (why????? if loaded you only get 1 each per kill)
 # B: compacted items get placed in inventory BEFORE corrupted fragments
-def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel: None | MinionFuelType, hopper: None | MinionHopperType, item_1:None | MinionItemType, item_2:None | MinionItemType, storage: None | MinionStorageType, mithril_infusion: bool, free_will: bool, postcard:bool, beacon_percent_boost: int, seconds: int, minionInventory=None) -> MinionSimulationOutput:
+def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel: None | MinionFuelType, hopper: None | MinionHopperType, item_1:None | MinionItemType, item_2:None | MinionItemType, storage: None | MinionStorageType, mithril_infusion: bool, free_will: bool, postcard:bool, beacon_percent_boost: int, pet_bonus_percent: int, crystal_bonus_percent: int, seconds: int, minionInventory=None) -> MinionSimulationOutput:
     
     outputs_per_cycle:dict[str, float] = {}
     outputs_per_cycle_not_multiplied:dict[str, float] = {}
@@ -278,13 +282,15 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
                     outputs_per_cycle[drop.item] = 0
                 outputs_per_cycle[drop.item] += drop.amount * (drop.percentage/100)
     
+    
     # handle minion upgrades
     if mithril_infusion: minion_speed_percentage += 10
     if free_will: minion_speed_percentage += 10
     if postcard: minion_speed_percentage += 5
     assert beacon_percent_boost in [0, 10, 11] # idc about lower level beacons
     if beacon_percent_boost: minion_speed_percentage += beacon_percent_boost
-    
+    if pet_bonus_percent: minion_speed_percentage += pet_bonus_percent
+    if crystal_bonus_percent: minion_speed_percentage += crystal_bonus_percent
     
     # handle fuel
     # ASSUMPTION: you will put in 64 fuel at a time
@@ -334,12 +340,12 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         elif item.name == "Lesser Soulflow Engine":
             minion_speed_percentage = minion_speed_percentage*0.5 # IS THIS CORRECT???
             # one soulflow is generated every 3 minutes (180 seconds)
-            outputs_per_cycle_not_multiplied["soulflow"] = 86400/180 # (480 soulflow/day)
+            outputs_per_day["soulflow"] = 86400/180 # (480 soulflow/day)
         
         elif item.name == "Soulflow Engine":
             minion_speed_percentage = minion_speed_percentage*0.5 # IS THIS CORRECT???
             # one soulflow is generated every 1.5 minutes (90 seconds)
-            outputs_per_cycle_not_multiplied["Soulflow"] = 86400/90 # (960 soulflow/day)
+            outputs_per_day["Soulflow"] = 86400/90 # (960 soulflow/day)
             if minion.name == "Voidling":
                 minion_speed_percentage += (3 * minion_level)
         
@@ -355,7 +361,8 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
                 if action.drops:
                     
                     # SPECIAL CASE: slimes have a special calculation (do other minions?)
-                    if minion.name == "Slime":
+                    # PENDING MORE TESTING...
+                    if minion.name == "Slime" and False:
                         for drop in action.drops:
                             outputs_per_cycle["Corrupted Fragment"] += 1 * (drop.percentage / 100)
                             outputs_per_cycle["Sulphur"] += 1 * (drop.percentage / 100)
@@ -399,17 +406,74 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
             #         outputs_per_cycle[converted_item.output_item] = outputs_per_cycle[item] / converted_item.input_count
             #         del outputs_per_cycle[item]
             #         inventory_slots_required_for_crafting += 1
-        
+    # some fuel calculation
+    fuel_runs_out = False
+    if fuel == None:
+        fuel_runs_out = True
+    elif fuel.duration_hours == None:
+        fuel_runs_out = False
+    else:
+        # ASSUMPTION: assume you always put in 64 fuel at a time
+        if seconds > ((fuel.duration_hours * 60*60) * 64):
+            fuel_runs_out = True
     # calculate outputs for the time period
     item_drops = {}
     
     seconds_per_cycle = (minion.levels[minion_level-1].seconds_per_action) * 2
     
-    time_period_1 = min(seconds)
-    
-    for item in outputs_per_cycle:
-        items_generated = time_period_1 / (seconds_per_cycle / (minion_speed_percentage/100))
-        item_drops[item] = floor(items_generated) 
+    if not fuel_runs_out:
+        # the happy path
+        for item in outputs_per_cycle:
+            items_generated = outputs_per_cycle[item] * (seconds / (seconds_per_cycle / (minion_speed_percentage/100)))
+            item_drops[item] = floor(items_generated) 
+        for item in outputs_per_cycle_not_multiplied:
+            items_generated = outputs_per_cycle_not_multiplied[item] * (seconds / ((seconds_per_cycle / (minion_speed_percentage/100))))
+            item_drops[item] = floor(items_generated)
+
+        # if minion.name == "Slime": input(item_drops)
+    else:
+        # the not happy path
+        # (we run out of fuel)
+        
+        time_1 = (fuel.duration_hours * 60*60) * 64
+        for item in outputs_per_cycle:
+            items_generated = outputs_per_cycle[item] * (time_1 / (seconds_per_cycle / (minion_speed_percentage/100)))
+            item_drops[item] = floor(items_generated) 
+        for item in outputs_per_cycle_not_multiplied:
+            items_generated = outputs_per_cycle_not_multiplied[item] * (time_1 / ((seconds_per_cycle / (minion_speed_percentage/100))))
+            item_drops[item] = floor(items_generated)
+        
+        # remove fuel
+        if fuel == None:
+            pass
+            
+        elif not fuel.special_case:
+            minion_speed_percentage -= fuel.percentage_boost
+            
+        elif fuel.name == "Everburning Flame":
+            minion_speed_percentage -= 35
+            if minion.skill_type == "combat":
+                minion_speed_percentage -= 5
+        
+        elif fuel.name == "Tasty Cheese":
+            for item in outputs_per_cycle:
+                outputs_per_cycle[item] /= 2
+        
+        elif fuel.name == "Catalyst":
+            for item in outputs_per_cycle:
+                outputs_per_cycle[item] /= 3
+                
+        elif fuel.name == "Hyper Catalyst":
+            for item in outputs_per_cycle:
+                outputs_per_cycle[item] /= 4
+        
+        time_2 = seconds - time_1
+        for item in outputs_per_cycle:
+            items_generated = outputs_per_cycle[item] * (time_2 / (seconds_per_cycle / (minion_speed_percentage/100)))
+            item_drops[item] = floor(items_generated) 
+        for item in outputs_per_cycle_not_multiplied:
+            items_generated = outputs_per_cycle_not_multiplied[item] * (time_2 / ((seconds_per_cycle / (minion_speed_percentage/100))))
+            item_drops[item] = floor(items_generated)
         
     
     for item in outputs_per_day:
@@ -504,7 +568,7 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         sb_item = skyblock_items.search_by_name(fuel.name)
         # calculate how many fuels would be used in this time period
         # fuel.length_in_seconds is how long one fuel lasts
-        cost_of_fuel = (float(seconds) / float(fuel.duration_hours*60)) * sb_item.bz_buy_price
+        cost_of_fuel = (float(seconds) / float(fuel.duration_hours*60*60)) * sb_item.bz_buy_price
     
     # ASSUMPTION: you have 29 minion slots.
     # yes, the cap is 31 but that requires grinding slayer and nether and pelts
@@ -518,16 +582,6 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         crystal_cost_24hrs_per_minion = (crystal.bz_sell_price / 2) / MINION_COUNT
         cost_of_fuel += crystal_cost_24hrs_per_minion * (seconds / 86400)
         
-    
-    fuel_empty = False
-    if fuel == None:
-        fuel_empty = True
-    elif fuel.duration_hours == None:
-        fuel_empty = False
-    else:
-        # ASSUMPTION: assume you always put in 64 fuel at a time
-        if seconds > ((fuel.duration_hours * 3600) * 64):
-            fuel_empty = True
     
     # CALCULATE PRICE OF INVENTORY
     coins_if_inventory_sell_order_to_bz=0
@@ -556,7 +610,7 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     profit_24h_if_inventory_instant_sold_to_bz = int(((coins_if_inventory_instant_sold_to_bz+hopper_money-cost_of_fuel) / seconds) * 86400)
     profit_24h_if_inventory_sell_order_to_bz = int(((coins_if_inventory_sell_order_to_bz+hopper_money-cost_of_fuel) / seconds) * 86400)
     profit_24h_if_inventory_sold_optimally = int(((coins_if_inventory_sold_optimally+hopper_money-cost_of_fuel) / seconds) * 86400)
-    profit_24h_only_hopper = int(hopper_money / seconds * 86400)
+    profit_24h_only_hopper = int((hopper_money-cost_of_fuel) / seconds * 86400)
     
     # some other stuff
     inventory_full = not_put_in_inventory != {}
@@ -570,15 +624,22 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
             continue 
         sb_item = skyblock_items.search_by_name(item)
         setup_cost += sb_item.bz_sell_price * amount
-        
+    
+    if fuel != None and fuel.duration_hours == None: 
+        item = skyblock_items.search_by_name(fuel.name)
+        if item.bz_sell_price == None:
+            skyblock_items.attempt_fetch_auction_data(item)
+        setup_cost += item.lowest_price()
     if hopper: setup_cost += skyblock_items.search_by_name(hopper.name).bz_sell_price
     if item_1: setup_cost += skyblock_items.search_by_name(item_1.name).bz_sell_price
     if item_2: setup_cost += skyblock_items.search_by_name(item_2.name).bz_sell_price
     # yes it's not a 100% chance but it's close enough and idc
     if free_will: setup_cost += skyblock_items.search_by_name("Free Will").bz_sell_price
     
-    # yes the price fluctuates but i don't want to learn the coflnet api for this
-    if postcard: setup_cost += (80 * 1000000) / MINION_COUNT # 80m / 29 minions
+    if postcard: 
+        item = skyblock_items.search_by_name("Postcard")
+        skyblock_items.attempt_fetch_auction_data(item)
+        setup_cost += item.lowest_price() / MINION_COUNT # 80m / 29 minions
     
     # generate cash / day
     
@@ -621,7 +682,7 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         cost_of_fuel=cost_of_fuel,
         
         inventory_full=inventory_full,
-        fuel_empty=fuel_empty,
+        fuel_empty=fuel_runs_out,
         
         minion_cost=setup_cost,
         
@@ -655,6 +716,7 @@ class MinionCombinationSimulationResults:
 
 
 simulation_outputs: list[MinionSimulationResult] = []
+id: int = 0
 
 for minion in MINIONS:
     
@@ -696,74 +758,80 @@ for minion in MINIONS:
                     for level in levels:
                         
                         
-                        
-                        for mithril_infusion in [True]:#[False, True]:
-                            for free_will in [False, True]:
-                                for postcard in [False, True]:
-                                    for beacon_percent_boost in [0, 10, 11]:
+                        for pet_bonus_percent in [0, True]:
+                            
+                            if pet_bonus_percent:
+                                if minion.max_pet_bonus_percentage == 0:
+                                    continue
+                                else:
+                                    pet_bonus_percent = minion.max_pet_bonus_percentage
+                            
+                                
+                            for crystal_bonus in [0, True]:
+                                if crystal_bonus == True and minion.crystal_bonus_percentage == 0:
+                                    continue
+                                crystal_bonus_percent = minion.crystal_bonus_percentage
+                                
+                                
+                                for mithril_infusion in [False, True]:
+                                    for free_will in [False, True]:
+                                        for postcard in [False, True]:
+                                            for beacon_percent_boost in [0, 10, 11]:
+                                                
+                                                for hopper in HOPPERS:
+                                            
+                                                    time_increments = [60*5, 60*60, 60*60*6, 60*60*12, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*365]
+                                                    
+                                                    for seconds in time_increments:
+                                                        sim = simulate_unloaded_minion_output(minion, level, fuel, hopper, item_1, item_2, storage, mithril_infusion, free_will, postcard, beacon_percent_boost, pet_bonus_percent, crystal_bonus, seconds)
+                                                        
+                                                        a = MinionSimulationResult(
+                                                            id=id,
+                                                            minion=minion.name,
+                                                            minion_level=level,
+                                                            fuel=fuel.name if fuel else None,
+                                                            hopper=hopper.name if hopper else None,
+                                                            item_1=item_1.name if item_1 else None,
+                                                            item_2=item_2.name if item_2 else None,
+                                                            storagetype=storage.name if storage else None,
+                                                            mithril_infusion=mithril_infusion,
+                                                            free_will=free_will,
+                                                            postcard=postcard,
+                                                            beacon_boost_percent=beacon_percent_boost,
+                                                            pet_bonus_percent=pet_bonus_percent,
+                                                            crystal_bonus_percent=crystal_bonus_percent,
+                                                            
+                                                            seconds=seconds,
+                                                            percentage_boost=sim.percentage_boost,
+                                                            raw_item_drops=str(sim.raw_item_drops),
+                                                            in_inventory=str(sim.in_inventory),
+                                                            sold_to_hopper=str(sim.sold_to_hopper),
+                                                            hopper_coins=sim.hopper_coins,
+                                                            coins_if_inventory_sell_order_to_bz=sim.coins_if_inventory_sell_order_to_bz,
+                                                            coins_if_inventory_instant_sold_to_bz=sim.coins_if_inventory_instant_sold_to_bz,
+                                                            coins_if_inventory_sold_to_npc=sim.coins_if_inventory_sold_to_npc,
+                                                            coins_if_inventory_sold_optimally=sim.coins_if_inventory_sold_optimally,
+                                                            profit_24h_if_inventory_sell_order_to_bz=sim.profit_24h_if_inventory_sell_order_to_bz,
+                                                            profit_24h_if_inventory_instant_sold_to_bz=sim.profit_24h_if_inventory_instant_sold_to_bz,
+                                                            profit_24h_if_inventory_sold_to_npc=sim.profit_24h_if_inventory_sold_to_npc,
+                                                            profit_24h_if_inventory_sold_optimally=sim.profit_24h_if_inventory_sold_optimally,
+                                                            profit_24h_only_hopper=sim.profit_24h_only_hopper,
+                                                            cost_of_fuel=sim.cost_of_fuel,
+                                                            inventory_full=sim.inventory_full,
+                                                            fuel_empty=sim.fuel_empty,
+                                                            minion_cost=sim.minion_cost,
+                                                        )
+                                                        id+=1
+                                                        if id % 5000 == 0:
+                                                            print(f"{id} combinations generated.")
+                                                        
+                                                        simulation_outputs.append(a)
+                                                        
+                                                        # m.time_combinations.append(sim)
                                         
-                                        for hopper in HOPPERS:
-                                            
-                                            m = MinionCombinationSimulationResults(
-                                                minion=minion.name,
-                                                minion_level=level,
-                                                fuel=fuel.name if fuel else None,
-                                                hopper=hopper.name if hopper else None,
-                                                item_1=item_1.name if item_1 else None,
-                                                item_2=item_2.name if item_2 else None,
-                                                storagetype=storage.name if storage else None,
-                                                mithril_infusion=mithril_infusion,
-                                                free_will=free_will,
-                                                postcard=postcard,
-                                                beacon_percent_boost=beacon_percent_boost,
-                                                time_combinations=[],
-                                            )
-                                    
-                                            time_increments = [60*5, 60*60, 60*60*6, 60*60*12, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*365]
-                                            
-                                            for seconds in time_increments:
-                                                sim = simulate_unloaded_minion_output(minion, level, fuel, hopper, item_1, item_2, storage, mithril_infusion, free_will, postcard, beacon_percent_boost, seconds)
-                                                
-                                                a = MinionSimulationResult(
-                                                    minion=minion.name,
-                                                    minion_level=level,
-                                                    fuel=fuel.name if fuel else None,
-                                                    hopper=hopper.name if hopper else None,
-                                                    item_1=item_1.name if item_1 else None,
-                                                    item_2=item_2.name if item_2 else None,
-                                                    storagetype=storage.name if storage else None,
-                                                    mithril_infusion=mithril_infusion,
-                                                    free_will=free_will,
-                                                    postcard=postcard,
-                                                    beacon_percent_boost=beacon_percent_boost,
-                                                    seconds=seconds,
-                                                    percentage_boost=sim.percentage_boost,
-                                                    raw_item_drops=str(sim.raw_item_drops),
-                                                    in_inventory=str(sim.in_inventory),
-                                                    sold_to_hopper=str(sim.sold_to_hopper),
-                                                    hopper_coins=sim.hopper_coins,
-                                                    coins_if_inventory_sell_order_to_bz=sim.coins_if_inventory_sell_order_to_bz,
-                                                    coins_if_inventory_instant_sold_to_bz=sim.coins_if_inventory_instant_sold_to_bz,
-                                                    coins_if_inventory_sold_to_npc=sim.coins_if_inventory_sold_to_npc,
-                                                    coins_if_inventory_sold_optimally=sim.coins_if_inventory_sold_optimally,
-                                                    profit_24h_if_inventory_sell_order_to_bz=sim.profit_24h_if_inventory_sell_order_to_bz,
-                                                    profit_24h_if_inventory_instant_sold_to_bz=sim.profit_24h_if_inventory_instant_sold_to_bz,
-                                                    profit_24h_if_inventory_sold_to_npc=sim.profit_24h_if_inventory_sold_to_npc,
-                                                    profit_24h_if_inventory_sold_optimally=sim.profit_24h_if_inventory_sold_optimally,
-                                                    profit_24h_only_hopper=sim.profit_24h_only_hopper,
-                                                    cost_of_fuel=sim.cost_of_fuel,
-                                                    inventory_full=sim.inventory_full,
-                                                    fuel_empty=sim.fuel_empty,
-                                                    minion_cost=sim.minion_cost,
-                                                )
-                                                
-                                                simulation_outputs.append(a)
-                                                
-                                                # m.time_combinations.append(sim)
-                                 
-                                            
-                                            # print(json.dumps(m, default=lambda k: k.__dict__, indent=4))
-                                            # input()
+                                                    
+                                                    # print(json.dumps(m, default=lambda k: k.__dict__, indent=4))
+                                                    # input()
                             
 
 print(f"{len(simulation_outputs)} combinations generated.")

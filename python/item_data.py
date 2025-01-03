@@ -28,6 +28,7 @@ class ItemCompactor:
     input_item: str
     input_count: int
     output_item: str
+    output_count: int = 1 # WARNING: NOT IMPLEMENTED IN SIMULATION
 
 COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "Glowstone Dust": ItemCompactor("Glowstone Dust", 4, "Glowstone"),
@@ -60,6 +61,9 @@ SUPER_COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "Enchanted Mutton": ItemCompactor("Enchanted Mutton", 160, "Enchanted Cooked Mutton"),
     "White Wool": ItemCompactor("White Wool", 160, "Enchanted Wool"),
     "Sulphur": ItemCompactor("Sulphur", 160, "Enchanted Sulphur"),
+    "Slimeball": ItemCompactor("Slimeball", 160, "Enchanted Slimeball"),
+    "Slime Block": ItemCompactor("Slime Block", 160, "Enchanted Slimeball", 9),
+    "Enchanted Slimeball": ItemCompactor("Enchanted Slimeball", 160, "Enchanted Slime Block"),
 }
 
 

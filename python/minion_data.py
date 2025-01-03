@@ -159,12 +159,12 @@ class MinionAction:
 
     
 class MinionBase:
-    def __init__(self, name, skill_type, crystal_exists, pet_boost_exists, non_minion_spawning_exists, non_minion_harvest_exists, levels:list[MinionLevelCost], actions:list[MinionAction]):
+    def __init__(self, name, skill_type, crystal_bonus_percentage:int, max_pet_bonus_percentage:int, non_minion_spawning_exists, non_minion_harvest_exists, levels:list[MinionLevelCost], actions:list[MinionAction]):
         self.name = name
         self.skill_type = skill_type
         
-        self.crystal_exists = crystal_exists
-        self.pet_boost_exists = pet_boost_exists
+        self.crystal_bonus_percentage = crystal_bonus_percentage
+        self.max_pet_bonus_percentage = max_pet_bonus_percentage
         self.non_minion_spawning_exists = non_minion_spawning_exists
         self.non_minion_harvest_exists = non_minion_harvest_exists
         self.non_minion_harvest_and_spawning_exists = non_minion_spawning_exists and non_minion_harvest_exists
@@ -179,10 +179,10 @@ MINION_MODIFIERS = ["Mithril Infusion", "Free Will"]
 MINIONS = [
     MinionBase("Sheep", 
         skill_type="farming",
-        crystal_exists=False, 
-        pet_boost_exists=False, 
+        crystal_bonus_percentage=0, 
+        max_pet_bonus_percentage=False, 
         non_minion_spawning_exists=False, 
-        non_minion_harvest_exists=True, 
+        non_minion_harvest_exists=False, 
         
         levels = [
             MLC(1, 24, 2, {"Mutton": 64, "Wooden Sword": 1}, False),
@@ -203,7 +203,34 @@ MINIONS = [
             MinionAction("spawn", None),
             MinionAction("harvest", [MinionDrop("Mutton", 1, 100), MinionDrop("White Wool", 1, 100)]),
         ]
-        ),
+    ),
+    
+    MinionBase("Slime",
+        skill_type="combat",
+        crystal_bonus_percentage=0,
+        max_pet_bonus_percentage=30,
+        non_minion_spawning_exists=False,
+        non_minion_harvest_exists=False,
+        
+        levels = [
+            MLC(1, 26, 2, {"Slimeball": 80, "Wooden Sword": 1}, None),
+            MLC(2, 26, 4, {"Slimeball": 160}, None), 
+            MLC(3, 24, 4, {"Slimeball": 320}, None),
+            MLC(4, 24, 6, {"Slimeball": 512}, None),
+            MLC(5, 22, 6, {"Enchanted Slimeball": 8}, None),
+            MLC(6, 22, 9, {"Enchanted Slimeball": 24}, None),
+            MLC(7, 19, 9, {"Enchanted Slimeball": 64}, None),
+            MLC(8, 19, 12, {"Enchanted Slimeball": 128}, None),
+            MLC(9, 16, 12, {"Enchanted Slimeball": 256}, None),
+            MLC(10, 16, 15, {"Enchanted Slimeball": 512}, None),
+            MLC(11, 12, 15, {"Enchanted Slime Block": 8}, None),
+        ],
+        actions = [
+            MinionAction("spawn", None),
+            MinionAction("harvest", [MinionDrop("Slimeball", 1, 100), MinionDrop("Slimeball", 1, 50), MinionDrop("Slimeball", 1, 50)])
+        ]
+        
+    )
     
     
     # MinionBase("cobblestone", "mining", False, False, False, True,
