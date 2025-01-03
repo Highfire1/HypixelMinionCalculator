@@ -60,7 +60,6 @@ class MinionItemType:
 
 ITEMS = (
     # MinionItemType("None", False, special_case=True, can_stack=True, eligible_minions=["all"]),
-    
     # Flat bonuses
     MinionItemType("Minion Expander", 5, False, True, ["all"]),
     MinionItemType("Flycatcher", 20, False, True, ["all"]),

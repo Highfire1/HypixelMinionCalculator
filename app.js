@@ -48,6 +48,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 updateTable(db, getFilters(), currentPage, pageSize);
 });
 
+const allItems = [
+    { id: "item-minion-expander", name: "Minion Expander" },
+    { id: "item-flycatcher", name: "Flycatcher" },
+    { id: "item-diamond-spreading", name: "Diamond Spreading" },
+    { id: "item-corrupt-soil", name: "Corrupt Soil" },
+    { id: "item-berberis-fuel-injector", name: "Berberis Fuel Injector" },
+    { id: "item-super-compactor", name: "Super Compactor 3000" },
+  ];
+
 function getFilters() {
     const minionFilter = document.getElementById("minion").value;
 
@@ -116,11 +125,23 @@ function getFilters() {
         upgrades = [0]
     }
 
+    const selectedItems = [];
+    const unselectedItems = [];
+    allItems.forEach((item) => {
+        const checkbox = document.getElementById(item.id);
+        if (checkbox && checkbox.checked) {
+        selectedItems.push(item.name);
+        } else {
+        unselectedItems.push(item.name);
+        }
+    });
+
     return {
         minion: minionFilter,
         sort: { column: sortColumn, order: sortOrder },
         timescales: timescales,
         upgrades: upgrades,
+        unselectedItems: unselectedItems,
         fuels: fuels
     };
 }
@@ -154,13 +175,18 @@ function updateTable(db, filters, page, pageSize) {
         query += ` AND fuel IN ('${filters.fuels.join("','")}')`;
     }
 
+    filters.unselectedItems.forEach((item) => {
+        query += ` AND item_1 != '${item}' AND item_2 != '${item}'`;
+      });
+
     if (!filters.upgrades.includes("Mithril Infusion")) { query += ` AND mithril_infusion = 0`; }
     if (!filters.upgrades.includes("Free Will")) { query += ` AND free_will = 0`; }
     if (!filters.upgrades.includes("Postcard")) { query += ` AND postcard = 0`; }
     if (!filters.upgrades.includes("Beacon")) { query += ` AND beacon_boost_percent = 0`; }
-    if (!filters.upgrades.includes("Pet Bonus")) { query += ` AND pet_bonus = 0`; }
-    if (!filters.upgrades.includes("Crystal")) { query += ` AND crystal = 0` };
+    if (!filters.upgrades.includes("Pet Bonus")) { query += ` AND pet_bonus_percent = 0`; }
+    if (!filters.upgrades.includes("Crystal")) { query += ` AND crystal_bonus_percent = 0` };
 
+    
 
     if (filters.sort) {
         query += ` ORDER BY ${filters.sort.column} ${filters.sort.order}`;

@@ -10,223 +10,327 @@
 
 <body>
     <h1 style="margin-bottom: 0px;">Hypixel Minion Combination Explorer</h1>
-    <p style="margin-top: 0px;">Made by Highfire1. More info <a href="https://github.com/Highfire1/HypixelMinionCalculator">here</a>.</p>
+    <p style="margin-top: 0px;">Made by Highfire1. Github repository: <a
+            href="https://github.com/Highfire1/HypixelMinionCalculator">here</a>.</p>
 
-    <div id="filters" style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="font-size: 1.2em;">
-            <label for="minion">Minion:</label>
-            <select id="minion" style="font-size: 1.05em;">
-                <option value="All">All</option>
-                <option value="Sheep">Sheep</option>
-                <option value="Slime">Slime</option>
-            </select>
-        </div>
+    <div style="display: flex; flex-direction: row; gap: 20px; flex-wrap: wrap;">
+        <div id="filters" style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="font-size: 1.2em;">
+                <label for="minion">Minion:</label>
+                <select id="minion" style="font-size: 1.05em;">
+                    <option value="All">All</option>
+                    <option value="Sheep">Sheep</option>
+                    <option value="Slime">Slime</option>
+                </select>
+            </div>
 
-        <div style="font-size: 1.2em;">
-            <label for="sort-column">Sort By:</label>
-            <select id="sort-column" style="font-size: 1.05em;">
-                <option value="profit_24h_only_hopper">PROFIT/DAY (hopper only)</option>
-                <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz + hopper)
-                </option>
-                <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell,
-                    sell_order, npc_price) + hopper)</option>
-                <!-- <option value="hopper_coins">Hopper Coins (NOT PROFIT)</option> -->
-                <option value="percentage_boost">Percentage Boost</option>
-                <option value="id">id</option>
-            </select>
+            <div style="font-size: 1.2em;">
+                <label for="sort-column">Sort By:</label>
+                <select id="sort-column" style="font-size: 1.05em;">
+                    <option value="profit_24h_only_hopper">PROFIT/DAY (hopper only)</option>
+                    <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz +
+                        hopper)
+                    </option>
+                    <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell,
+                        sell_order, npc_price) + hopper)</option>
+                    <!-- <option value="hopper_coins">Hopper Coins (NOT PROFIT)</option> -->
+                    <option value="percentage_boost">Percentage Boost</option>
+                    <option value="id">id</option>
+                </select>
+                <br>
 
-            <label for="sort-order">Order:</label>
-            <select id="sort-order" style="font-size: 1.05em;">
-                <option value="DESC">High → Low</option>
-                <option value="ASC">Low → High</option>
-            </select>
+                <label for="sort-order">Order:</label>
+                <select id="sort-order" style="font-size: 1.05em;">
+                    <option value="DESC">High → Low</option>
+                    <option value="ASC">Low → High</option>
+                </select>
 
-            <!-- <label for="free-will">Exclude Free Will:</label>
+                <!-- <label for="free-will">Exclude Free Will:</label>
             <input type="checkbox" id="free-will"> -->
+            </div>
+
+            <div>
+                <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Fuels:</p>
+
+                <label for="fuel-enchanted-lava-bucket"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Enchanted Lava Bucket:</span>
+                    <input type="checkbox" id="fuel-enchanted-lava-bucket">
+                </label>
+
+                <label for="fuel-magma-bucket"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Magma Bucket:</span>
+                    <input type="checkbox" id="fuel-magma-bucket">
+                </label>
+
+                <label for="fuel-plasma-bucket"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Plasma Bucket:</span>
+                    <input type="checkbox" id="fuel-plasma-bucket" checked>
+                </label>
+
+                <label for="fuel-everburning-flame"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Everburning Flame:</span>
+                    <input type="checkbox" id="fuel-everburning-flame">
+                </label>
+
+                <br>
+
+                <label for="fuel-hamster-wheel"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Hamster Wheel:</span>
+                    <input type="checkbox" id="fuel-hamster-wheel" checked>
+                </label>
+
+                <label for="fuel-foul-flesh"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Foul Flesh:</span>
+                    <input type="checkbox" id="fuel-foul-flesh" checked>
+                </label>
+
+                <br>
+
+                <label for="fuel-tasty-cheese"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Tasty Cheese:</span>
+                    <input type="checkbox" id="fuel-tasty-cheese" checked>
+                </label>
+
+                <label for="fuel-catalyst"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Catalyst:</span>
+                    <input type="checkbox" id="fuel-catalyst" checked>
+                </label>
+
+                <label for="fuel-hyper-catalyst"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Hyper Catalyst:</span>
+                    <input type="checkbox" id="fuel-hyper-catalyst" checked>
+                </label>
+
+            </div>
+
+            <!-- ITEMS -->
+            <div>
+                <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Items:</p>
+
+                <label for="item-minion-expander"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Minion Expander</span>
+                    <input type="checkbox" id="item-minion-expander" checked>
+                </label>
+
+                <label for="item-flycatcher"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Flycatcher</span>
+                    <input type="checkbox" id="item-flycatcher" checked>
+                </label>
+
+                <label for="item-diamond-spreading"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Diamond Spreading</span>
+                    <input type="checkbox" id="item-diamond-spreading" checked>
+                </label>
+
+                <br>
+
+                <label for="item-corrupt-soil"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Corrupt Soil</span>
+                    <input type="checkbox" id="item-corrupt-soil" checked>
+                </label>
+
+                <label for="item-berberis-fuel-injector"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Berberis Fuel Injector</span>
+                    <input type="checkbox" id="item-berberis-fuel-injector" checked>
+                </label>
+
+                <label for="item-super-compactor"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Super Compactor 3000</span>
+                    <input type="checkbox" id="item-super-compactor" checked>
+                </label>
+            </div>
+
+
+            <div>
+                <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Minion Upgrades:</p>
+
+                <label for="upgrade-mithril-infusion"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Mithril Infusion:</span>
+                    <input type="checkbox" id="upgrade-mithril-infusion" checked>
+                </label>
+
+                <label for="upgrade-free-will"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Free Will:</span>
+                    <input type="checkbox" id="upgrade-free-will">
+                </label>
+
+                <label for="upgrade-postcard"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Postcard:</span>
+                    <input type="checkbox" id="upgrade-postcard" checked>
+                </label>
+
+                <label for="upgrade-beacon"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Beacon:</span>
+                    <input type="checkbox" id="upgrade-beacon" checked>
+                </label>
+
+                <label for="upgrade-pet"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Pet Bonus:</span>
+                    <input type="checkbox" id="upgrade-pet" checked>
+                </label>
+
+                <label for="upgrade-crystal"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Crystal:</span>
+                    <input type="checkbox" id="upgrade-crystal" checked>
+                </label>
+            </div>
+
+
+            <!-- HIDE -->
+            <div>
+                <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Simulated time lengths:</p>
+
+                <label for="seconds-300"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>5m:</span>
+                    <input type="checkbox" id="seconds-300">
+                </label>
+
+                <label for="seconds-3600"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>1h:</span>
+                    <input type="checkbox" id="seconds-3600">
+                </label>
+
+                <label for="seconds-21600"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>6h:</span>
+                    <input type="checkbox" id="seconds-21600">
+                </label>
+
+                <label for="seconds-43200"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>12h:</span>
+                    <input type="checkbox" id="seconds-43200">
+                </label>
+
+                <label for="seconds-86400"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>24h:</span>
+                    <input type="checkbox" id="seconds-86400" checked>
+                </label>
+
+                <label for="seconds-172800"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>48h:</span>
+                    <input type="checkbox" id="seconds-172800">
+                </label>
+
+                <label for="seconds-604800"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>7d:</span>
+                    <input type="checkbox" id="seconds-604800" checked>
+                </label>
+
+                <label for="seconds-1209600"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>14d:</span>
+                    <input type="checkbox" id="seconds-1209600">
+                </label>
+
+                <label for="seconds-31536000"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>1y:</span>
+                    <input type="checkbox" id="seconds-31536000" checked>
+                </label>
+            </div>
+
+            <!-- Add after the filters div, before apply filters button -->
+            <div>
+                <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Misc:</p>
+
+                <label for="show-calculations"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Show Detailed Calculations:</span>
+                    <input type="checkbox" id="show-calculations">
+                </label>
+            </div>
+
+            <button id="apply-filters" style="width: fit-content; font-size:1.05em">Apply Filters</button>
+
         </div>
 
-        <div>
-            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Fuels:</p>
 
-            <label for="fuel-enchanted-lava-bucket"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Enchanted Lava Bucket:</span>
-                <input type="checkbox" id="fuel-enchanted-lava-bucket">
-            </label>
+        <div style="border-radius: 10px; border: 1px solid black; padding: 10px; flex-grow: 1; max-width: 650px;"
+            id="INFOBOX">
+            <h2>Information, Disclaimers</h2>
 
-            <label for="fuel-magma-bucket"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Magma Bucket:</span>
-                <input type="checkbox" id="fuel-magma-bucket">
-            </label>
+            <h3>About</h3>
+            <ul>
+                <li>This database contains 116640 unique combinations of sheep and slime minions. This covers almost all
+                    fuel, item, enhancement, and any other option you can think of. This way we can be sure that we are
+                    calculating the most effective minion setup.</li>
+                <li>Q: What does simulated time lengths mean? A: Compactable items are placed in minion inventories
+                    before non-compactable items. The implication is that if you leave your island alone, there is a
+                    point where you can use super compactor and store enchanted items, while excess corrupted fragments
+                    will be calculated after those are stored and will be sold to a hopper. This lets you take advantage
+                    of bz prices (3-5x more than npc sell price) for those enchanted items, which can make you big
+                    profits if you check your minions every few days. However you MUST check your minion before it
+                    crafts the third level of item (enchanted mutton cooked mutton / enchanted slime block) which
+                    happens in about a week. If you let it craft the third stage item you will be making less money than
+                    an idle setup where there is a flycatcher or even diamond spreading instead of a compactor. By
+                    actually simulating your minion output for a given timeframe, this lets you see the potential money you could make.
+                </li>
+                <li>Q: Why? A: I really like this game and have some fond memories of it, however it really does not respect your time. Minions are a way to maintain progression while touching grass. Also I am tired of staring at my ugly minion optimization spreadsheet.</li>
+                <li>Postcard, Crystal, Beacon and Pet Boost should all work offline now. However, you must have the
+                    relevant pet equipped when you load the island for the bonus to apply.</li>
+                <li>Bazaar prices are as of January 2nd, 2024.</li>
+                <li>"PROFIT/DAY (inventory→ optimal sell + hopper)" means that you will sell to the highest seller (sell
+                    order or npc). This is impractical and selling millions of corrupted frags to npc will kill you, it
+                    is more about determining the upper bound.</li>
+                <li>Thanks to: many reddit posts and hypixel forum threads for information about minion mechanics <3.</li>
+            </ul>
 
-            <label for="fuel-plasma-bucket"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Plasma Bucket:</span>
-                <input type="checkbox" id="fuel-plasma-bucket" checked>
-            </label>
+            <h3>Assumptions:</h3>
+            <ul>
+                <li>You are not AFKing on your island (ie your island is unloaded). The simulation calculation relies on some offline calculations
+                    such as compactor prioritization (see below), and catalyst only affecting corrupt soil drops when
+                    the island is not loaded.</li>
+                <li>The Minion Cost for Postcard and Fuel Cost for Power Crystals in beacons are divided by 29 minions.
+                    You will gain a little bit more money if you have 30 or 31 minions.</li>
+                <li>It is assumed that you will put in 64 fuel at a time.</li>
+            </ul>
 
-            <label for="fuel-everburning-flame"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Everburning Flame:</span>
-                <input type="checkbox" id="fuel-everburning-flame">
-            </label>
+            <h3>Future improvements</h3>
+            <ul>
+                <li>Optimize the database so we can show the other 58 minions. Loading this database to your browser took 35mb, so the full roster would be sending 1gb to your browser. This is inefficient and will be laggy. Also it takes several minutes to generate the database for these two minions. We can probably make some assumptions like you will always use infusion or maybe we can cut up the database into chunks</li>
+                <li>Derpy has some weird interactions with some items and minions, needs to be investigated.</li>
+                <li>Bazaar data does not automatically update. It should be possible to automate this.</li>
+                <li>We can make smarter decisions about simulated time lengths so that we can calculate your checkin deadline before the third tier is crafted. Might need to be on a separate page.</li>
+                <li>Some of the setups shown below need to be tested. It is possible that there are bugs or some other subtle errors in the code.</li>
+                <li>Do guests make your minions calculate offline gains? This should be tested since it would MURDER income if you are waiting for Derpy.</li>
+                <li>It should be possible to show skill exp gain. I don't think there is any scenario where that would be of use because money is just. 20x better than skill exp but it should be technically possible.</li>
+            </ul>
 
-            <br>
-
-            <label for="fuel-hamster-wheel"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Hamster Wheel:</span>
-                <input type="checkbox" id="fuel-hamster-wheel" checked>
-            </label>
-
-            <label for="fuel-foul-flesh"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Foul Flesh:</span>
-                <input type="checkbox" id="fuel-foul-flesh" checked>
-            </label>
-
-            <br>
-
-            <label for="fuel-tasty-cheese"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Tasty Cheese:</span>
-                <input type="checkbox" id="fuel-tasty-cheese" checked>
-            </label>
-
-            <label for="fuel-catalyst"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Catalyst:</span>
-                <input type="checkbox" id="fuel-catalyst" checked>
-            </label>
-
-            <label for="fuel-hyper-catalyst"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Hyper Catalyst:</span>
-                <input type="checkbox" id="fuel-hyper-catalyst" checked>
-            </label>
-
-        </div>
-
-        <div>
-            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Minion Upgrades:</p>
-
-            <label for="upgrade-mithril-infusion"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Mithril Infusion:</span>
-                <input type="checkbox" id="upgrade-mithril-infusion" checked>
-            </label>
-
-            <label for="upgrade-free-will"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Free Will:</span>
-                <input type="checkbox" id="upgrade-free-will">
-            </label>
-
-            <label for="upgrade-postcard"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Postcard:</span>
-                <input type="checkbox" id="upgrade-postcard" checked>
-            </label>
-
-            <label for="upgrade-beacon"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Beacon:</span>
-                <input type="checkbox" id="upgrade-beacon" checked>
-            </label>
-
-            <label for="upgrade-pet"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Pet Bonus:</span>
-                <input type="checkbox" id="upgrade-pet" checked>
-            </label>
-
-            <label for="upgrade-crystal"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Crystal:</span>
-                <input type="checkbox" id="upgrade-crystal" checked>
-            </label>
-        </div>
-
-
-        <!-- HIDE -->
-        <div>
-            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Simulated time lengths:</p>
-
-            <label for="seconds-300"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>5m:</span>
-                <input type="checkbox" id="seconds-300">
-            </label>
-
-            <label for="seconds-3600"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>1h:</span>
-                <input type="checkbox" id="seconds-3600">
-            </label>
-
-            <label for="seconds-21600"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>6h:</span>
-                <input type="checkbox" id="seconds-21600">
-            </label>
-
-            <label for="seconds-43200"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>12h:</span>
-                <input type="checkbox" id="seconds-43200">
-            </label>
-
-            <label for="seconds-86400"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>24h:</span>
-                <input type="checkbox" id="seconds-86400" checked>
-            </label>
-
-            <label for="seconds-172800"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>48h:</span>
-                <input type="checkbox" id="seconds-172800">
-            </label>
-
-            <label for="seconds-604800"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>7d:</span>
-                <input type="checkbox" id="seconds-604800" checked>
-            </label>
-
-            <label for="seconds-1209600"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>14d:</span>
-                <input type="checkbox" id="seconds-1209600">
-            </label>
-
-            <label for="seconds-31536000"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>1y:</span>
-                <input type="checkbox" id="seconds-31536000" checked>
-            </label>
-        </div>
-
-        <!-- Add after the filters div, before apply filters button -->
-        <div>
-            <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Misc:</p>
-
-            <label for="show-calculations"
-                style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                <span>Show Detailed Calculations:</span>
-                <input type="checkbox" id="show-calculations">
-            </label>
+            <button onclick="document.getElementById('INFOBOX').style.display = 'none'"
+                style="float: left; font-size:1.1em">Got it, hide the infobox</button>
         </div>
 
     </div>
 
-
-    <button id="apply-filters" style="width: fit-content; font-size:1.05em">Apply Filters</button>
     </div>
-
-
-    <table id="results-table" style="margin-right: 0px;"> 
+    <table id="results-table" style="margin-right: 0px;">
         <thead>
             <tr>
                 <th>ID</th>
