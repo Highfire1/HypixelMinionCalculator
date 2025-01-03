@@ -1,3 +1,17 @@
+"""
+FAQ:
+
+ Q: Where are Farming Crystal and Pet Boosts
+ A: THEY ARE NOW INCLUDED IN AFK CALCULATIONS? 
+ THERE IS NO LONGER A NEED to AFK on your island for these bonuses to apply.
+ However, you must make sure that your pet is equipped.
+ (this also includes postcard)
+
+ q: where inferno minion?
+ It's too complicated for this interface, use the page on the wiki: https://hypixel-skyblock.fandom.com/wiki/User:Voball/Sandbox-Inferno_Minions
+
+
+"""
 
 import copy
 from dataclasses import dataclass
