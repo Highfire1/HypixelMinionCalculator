@@ -251,7 +251,7 @@ function renderTable(result) {
             } else if (i > 18 && i < 30 || i == 32) {
                 td.textContent = fmtMoney(cell);
             } else if (i == 16 || i == 17 || i == 18) {
-                td.style.fontSize = '0.50em';
+                td.style.fontSize = '0.75em';
                 td.textContent = cell;
             } else if (i == 14) {
                 td.textContent = fmtSeconds(cell);
