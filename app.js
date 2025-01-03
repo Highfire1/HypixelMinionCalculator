@@ -65,7 +65,13 @@ function getFilters() {
 
 async function initDatabase() {
     const SQL = await initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}` });
-    const response = await fetch("/data/sheep_minion_combinations.db");
+    let db_path = "";
+    if (window.location.pathname == "/") { // localhost
+        db_path = "/data/sheep_minion_combinations.db"
+    } else { // server
+        db_path = window.location.pathname + "/data/sheep_minion_combinations.db"
+    }
+    const response = await fetch(db_path);
     const buffer = await response.arrayBuffer();
     return new SQL.Database(new Uint8Array(buffer));
 }
