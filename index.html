@@ -281,36 +281,37 @@
                 <li>This database contains 116640 unique combinations of sheep and slime minions. This covers almost all
                     fuel, item, enhancement, and any other option you can think of. This way we can be sure that we are
                     calculating the most effective minion setup.</li>
+                
+                <li>Q: Why? A: I really like this game and have some fond memories of it, however it really does not respect your time. Minions are a way to maintain progression while touching grass. Also I am tired of staring at my ugly minion optimization spreadsheet.</li>
+
                 <li>Q: What does simulated time lengths mean? A: Compactable items are placed in minion inventories
                     before non-compactable items. The implication is that if you leave your island alone, there is a
-                    point where you can use super compactor and store enchanted items, while excess corrupted fragments
+                    point where you can use super compactor to store enchanted items, while excess corrupted fragments
                     will be calculated after those are stored and will be sold to a hopper. This lets you take advantage
                     of bz prices (3-5x more than npc sell price) for those enchanted items, which can make you big
                     profits if you check your minions every few days. However you MUST check your minion before it
                     crafts the third level of item (enchanted mutton cooked mutton / enchanted slime block) which
-                    happens in about a week. If you let it craft the third stage item you will be making less money than
+                    happens in 36-72 hours. If you let it craft the third stage item you will be making less money than
                     an idle setup where there is a flycatcher or even diamond spreading instead of a compactor. By
                     actually simulating your minion output for a given timeframe, this lets you see the potential money you could make.
                 </li>
-                <li>Q: Why? A: I really like this game and have some fond memories of it, however it really does not respect your time. Minions are a way to maintain progression while touching grass. Also I am tired of staring at my ugly minion optimization spreadsheet.</li>
                 <li>Postcard, Crystal, Beacon and Pet Boost should all work offline now. However, you must have the
                     relevant pet equipped when you load the island for the bonus to apply.</li>
                 <li>Bazaar prices are as of January 2nd, 2024.</li>
                 <li>"PROFIT/DAY (inventory→ optimal sell + hopper)" means that you will sell to the highest seller (sell
                     order or npc). This is impractical and selling millions of corrupted frags to npc will kill you, it
                     is more about determining the upper bound.</li>
-                <li>Pet price is not included in Minion Cost</li>
                 <li>Thanks to: many reddit posts and hypixel forum threads for information about minion mechanics <3.</li>
             </ul>
 
             <h3>Assumptions:</h3>
             <ul>
                 <li>You are not AFKing on your island (ie your island is unloaded). The simulation calculation relies on some offline calculations
-                    such as compactor prioritization (see below), and catalyst only affecting corrupt soil drops when
+                    such as compactor prioritization (see above), and catalyst only affecting corrupt soil drops when
                     the island is not loaded.</li>
                 <li>The Minion Cost for Postcard and Fuel Cost for Power Crystals in beacons are divided by 29 minions.
                     You will gain a little bit more money if you have 30 or 31 minions.</li>
-                <li>It is assumed that you will put in 64 fuel at a time.</li>
+                <li>It is assumed that you will put in 64 fuel at a time. (the one thing that is not included in price calculations is pet price because it is not easy to get a price for a 100 level pet)</li>
             </ul>
 
             <h3>Future improvements</h3>
@@ -318,7 +319,7 @@
                 <li>Optimize the database so we can show the other 58 minions. Loading this database to your browser took 35mb, so the full roster would be sending 1gb to your browser. This is inefficient and will be laggy. Also it takes several minutes to generate the database for these two minions. We can probably make some assumptions like you will always use infusion or maybe we can cut up the database into chunks</li>
                 <li>Derpy has some weird interactions with some items and minions, needs to be investigated.</li>
                 <li>Bazaar data does not automatically update. It should be possible to automate this.</li>
-                <li>We can make smarter decisions about simulated time lengths so that we can calculate your checkin deadline before the third tier is crafted. Might need to be on a separate page.</li>
+                <li>A separate page to see when exactly your deadline is for checking your minion before it crafts t3 material/runs out of inventory/fuel.</li>
                 <li>Some of the setups shown below need to be tested. It is possible that there are bugs or some other subtle errors in the code.</li>
                 <li>Do guests make your minions calculate offline gains? This should be tested since it would MURDER income if you are waiting for Derpy.</li>
                 <li>It should be possible to show skill exp gain. I don't think there is any scenario where that would be of use because money is just. 20x better than skill exp but it should be technically possible.</li>
