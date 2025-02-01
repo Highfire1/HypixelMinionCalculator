@@ -1,3 +1,7 @@
 /__pycache__
 
 data/sheep_minion_combinations.json
+
+
+**.pyc
+*/__pycache__/*
