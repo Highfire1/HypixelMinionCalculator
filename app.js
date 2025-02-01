@@ -268,7 +268,7 @@ function renderTable(result) {
                 td.textContent = cell === 0 ? "" : "T"
             } else if (i == 11 || i == 12 || i == 13 || i == 15) {
                 td.textContent = cell == 0 ? "" : cell + "%"
-            } else if (i > 18 && i < 30 || i == 32) {
+            } else if (i > 18 && i < 30 || i == 32 || i == 33 || i == 34) {
                 td.textContent = fmtMoney(cell);
             } else if (i == 16 || i == 17 || i == 18) {
                 td.style.fontSize = '0.75em';

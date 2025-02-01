@@ -226,7 +226,9 @@ class MinionSimulationOutput:
     inventory_full: bool
     fuel_empty: bool
     
-    minion_cost: int
+    minion_cost_non_recoverable: int
+    minion_cost_recoverable: int
+    minion_cost_total: int
     # coins_per_day: int
     
 class MinionSimulationResult(SQLModel, table=True):
@@ -270,7 +272,10 @@ class MinionSimulationResult(SQLModel, table=True):
     inventory_full: bool
     fuel_empty: bool
     
-    minion_cost: int
+    minion_cost_total: int
+    minion_cost_recoverable: int
+    minion_cost_non_recoverable: int
+    
 
 skyblock_items = SkyblockItems(only_bazaar=False)
 
@@ -630,30 +635,48 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     inventory_full = not_put_in_inventory != {}
     
     # generate minion cost taking into account minion level materials, items, hopper, and postcard
+    minion_cost_total = 0
+    minion_cost_recoverable = 0
+    minion_cost_non_recoverable = 0
+    
+    # Calculate setup cost for all levels up to and including current level
     setup_cost = 0
-    for item, amount in minion.levels[minion_level-1].items.items():
-        if "Wooden" in item:
-            continue
-        if "Pelts" in item: # yes pelts have value (3m?) but frankly i don't think it matters that much
-            continue 
-        sb_item = skyblock_items.search_by_name(item)
-        setup_cost += sb_item.bz_sell_price * amount
+    for minion_level_info_object in minion.levels[:minion_level]:
+        
+        for item, amount in minion_level_info_object.items.items():
+            if "Wooden" in item or "Pelts" in item:  
+                # technically pelt has 3m value each but its whatever
+                continue
+            sb_item = skyblock_items.search_by_name(item)
+            setup_cost += sb_item.bz_sell_price * amount
+            
+    minion_cost_non_recoverable += setup_cost
     
     if fuel != None and fuel.duration_hours == None: 
         item = skyblock_items.search_by_name(fuel.name)
         if item.bz_sell_price == None:
             skyblock_items.attempt_fetch_auction_data(item)
-        setup_cost += item.lowest_price()
-    if hopper: setup_cost += skyblock_items.search_by_name(hopper.name).bz_sell_price
-    if item_1: setup_cost += skyblock_items.search_by_name(item_1.name).bz_sell_price
-    if item_2: setup_cost += skyblock_items.search_by_name(item_2.name).bz_sell_price
+        minion_cost_recoverable += item.lowest_price()
+    if hopper: minion_cost_recoverable += skyblock_items.search_by_name(hopper.name).bz_sell_price
+    if item_1: minion_cost_recoverable += skyblock_items.search_by_name(item_1.name).bz_sell_price
+    if item_2: minion_cost_recoverable += skyblock_items.search_by_name(item_2.name).bz_sell_price
     # yes it's not a 100% chance but it's close enough and idc
-    if free_will: setup_cost += skyblock_items.search_by_name("Free Will").bz_sell_price
+    if mithril_infusion: minion_cost_non_recoverable += skyblock_items.search_by_name("Mithril Infusion").bz_sell_price
+    if free_will: minion_cost_non_recoverable += skyblock_items.search_by_name("Free Will").bz_sell_price
     
     if postcard: 
         item = skyblock_items.search_by_name("Postcard")
         skyblock_items.attempt_fetch_auction_data(item)
-        setup_cost += item.lowest_price() / MINION_COUNT # 80m / 29 minions
+        minion_cost_recoverable += item.lowest_price() / MINION_COUNT # 80m / 29 minions
+        
+    if beacon_percent_boost > 0:
+        item = skyblock_items.search_by_name("Beacon V")
+        skyblock_items.attempt_fetch_auction_data(item)
+        minion_cost_recoverable += item.lowest_price() / MINION_COUNT
+    
+    # ignoring cost of pet and crystal here
+    
+    minion_cost_total = minion_cost_recoverable + minion_cost_non_recoverable
     
     # generate cash / day
     
@@ -667,6 +690,10 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     coins_if_inventory_sell_order_to_bz = int(coins_if_inventory_sell_order_to_bz)
     coins_if_inventory_sold_to_npc = int(coins_if_inventory_sold_to_npc)
     coins_if_inventory_sold_optimally = int(coins_if_inventory_sold_optimally)
+    
+    minion_cost_total = int(minion_cost_total)
+    minion_cost_recoverable = int(minion_cost_recoverable)
+    minion_cost_non_recoverable = int(minion_cost_non_recoverable)
     
     return MinionSimulationOutput(
         seconds=seconds,
@@ -698,7 +725,9 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         inventory_full=inventory_full,
         fuel_empty=fuel_runs_out,
         
-        minion_cost=setup_cost,
+        minion_cost_total=minion_cost_total,
+        minion_cost_non_recoverable=minion_cost_non_recoverable,
+        minion_cost_recoverable=minion_cost_recoverable,
         
         # coins_per_day=coins_per_day,
     )
@@ -835,7 +864,9 @@ for minion in MINIONS:
                                                             cost_of_fuel=sim.cost_of_fuel,
                                                             inventory_full=sim.inventory_full,
                                                             fuel_empty=sim.fuel_empty,
-                                                            minion_cost=sim.minion_cost,
+                                                            minion_cost_total=sim.minion_cost_total,
+                                                            minion_cost_non_recoverable=sim.minion_cost_non_recoverable,
+                                                            minion_cost_recoverable=sim.minion_cost_recoverable,
                                                         )
                                                         id+=1
                                                         if id % 5000 == 0:

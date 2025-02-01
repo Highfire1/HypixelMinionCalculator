@@ -168,8 +168,8 @@ class MinionBase:
         self.non_minion_harvest_exists = non_minion_harvest_exists
         self.non_minion_harvest_and_spawning_exists = non_minion_spawning_exists and non_minion_harvest_exists
         
-        self.levels = levels
-        self.actions = actions
+        self.levels:list[MLC] = levels
+        self.actions:list[MinionAction] = actions
 
 
 ISLAND_MODIFIERS = ["Derpy", "Postcard", "Beacon"]
