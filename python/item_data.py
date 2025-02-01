@@ -64,6 +64,10 @@ SUPER_COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "Slimeball": ItemCompactor("Slimeball", 160, "Enchanted Slimeball"),
     "Slime Block": ItemCompactor("Slime Block", 160, "Enchanted Slimeball", 9),
     "Enchanted Slimeball": ItemCompactor("Enchanted Slimeball", 160, "Enchanted Slime Block"),
+    "Spider Eye": ItemCompactor("Spider Eye", 160, "Enchanted Spider Eye"),
+    "String": ItemCompactor("String", 160, "Enchanted String"),
+    "Iron Ingot": ItemCompactor("Iron Ingot", 160, "Enchanted Iron"),
+    "Enchanted Iron": ItemCompactor("Enchanted Iron", 160, "Enchanted Iron Block"),
 }
 
 

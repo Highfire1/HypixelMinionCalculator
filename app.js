@@ -64,26 +64,20 @@ function getFilters() {
     const sortOrder = document.getElementById("sort-order").value;
 
     const ts1 = document.querySelector("#seconds-300").checked || false;
-    const ts2 = document.querySelector("#seconds-3600").checked || false;
-    const ts3 = document.querySelector("#seconds-21600").checked || false;
-    const ts4 = document.querySelector("#seconds-43200").checked || false;
-    const ts5 = document.querySelector("#seconds-86400").checked || false;
-    const ts6 = document.querySelector("#seconds-172800").checked || false;
-    const ts7 = document.querySelector("#seconds-604800").checked || false;
-    const ts8 = document.querySelector("#seconds-1209600").checked || false;
-    const ts9 = document.querySelector("#seconds-31536000").checked || false;
-
+    const ts2 = document.querySelector("#seconds-86400").checked || false;
+    const ts3 = document.querySelector("#seconds-172800").checked || false;
+    const ts4 = document.querySelector("#seconds-604800").checked || false;
+    const ts5 = document.querySelector("#seconds-1209600").checked || false;
+    const ts6 = document.querySelector("#seconds-10713600").checked || false;
+    
     const timescales = [
         0, // Always include 0 seconds so if empty, it will return nothing
         ts1 ? 300 : null,
-        ts2 ? 3600 : null,
-        ts3 ? 21600 : null,
-        ts4 ? 43200 : null,
-        ts5 ? 86400 : null,
-        ts6 ? 172800 : null,
-        ts7 ? 604800 : null,
-        ts8 ? 1209600 : null,
-        ts9 ? 31536000 : null
+        ts2 ? 86400 : null,
+        ts3 ? 172800 : null,
+        ts4 ? 604800 : null,
+        ts5 ? 1209600 : null,
+        ts6 ? 10713600 : null,
     ].filter(x => x !== null);
 
     const fuelMappings = {

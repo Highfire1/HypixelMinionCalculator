@@ -226,10 +226,48 @@ MINIONS = [
         ],
         actions = [
             MinionAction("spawn", None),
-            MinionAction("harvest", [MinionDrop("Slimeball", 1, 100), MinionDrop("Slimeball", 1, 50), MinionDrop("Slimeball", 1, 50)])
+            MinionAction("harvest", [
+                MinionDrop("Slimeball", 1, 100), MinionDrop("Slimeball", 1, 50), MinionDrop("Slimeball", 1, 50)])
         ]
         
-    )
+    ),
+    
+    MinionBase("Tarantula",
+        skill_type="combat",
+        crystal_bonus_percentage=0,
+        max_pet_bonus_percentage=0,
+        non_minion_spawning_exists=False,
+        non_minion_harvest_exists=True,
+        
+        levels = [
+            MLC(1, 29, 1, {"Tarantula Web": 80, "Enchanted Fermented Spider Eye": 1}, None),
+            MLC(2, 29, 3, {"Tarantula Web": 140, "String": 80, "Wooden Sword": 1}, None),
+            MLC(3, 26, 3, {"Tarantula Web": 280, "String": 160}, None),
+            MLC(4, 26, 6, {"Tarantula Web": 448, "String": 320}, None),
+            MLC(5, 23, 6, {"Tarantula Silk": 7, "String": 512}, None),
+            MLC(6, 23, 9, {"Tarantula Silk": 14, "Enchanted String": 8}, None),
+            MLC(7, 19, 9, {"Tarantula Silk": 28, "Enchanted String": 16}, None),
+            MLC(8, 19, 12, {"Tarantula Silk": 56, "Enchanted String": 32}, None),
+            MLC(9, 14.5, 12, {"Tarantula Silk": 112, "Enchanted String": 64}, None),
+            MLC(10, 14.5, 15, {"Tarantula Silk": 224, "Enchanted String": 128}, None),
+            MLC(11, 10, 15, {"Tarantula Silk": 448, "Enchanted String": 256}, None),
+        ],
+        
+        actions = [
+            MinionAction("spawn", None),
+            MinionAction("harvest", [
+                MinionDrop("String", 3.16, 100), 
+                MinionDrop("Spider Eye", 1, 100),
+                MinionDrop("Iron Ingot", 1, 20),
+                ]),
+        ]
+        
+               
+               
+               
+               ),
+    
+    
     
     
     # MinionBase("cobblestone", "mining", False, False, False, True,
