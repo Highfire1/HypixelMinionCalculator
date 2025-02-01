@@ -612,8 +612,11 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     for item in inventory_items:
         sb_item = skyblock_items.search_by_name(item)
         npc = sb_item.npc_sell_price * inventory_items[item]
-        instant_sell = sb_item.bz_sell_price * inventory_items[item]
-        sell_order = sb_item.bz_buy_price * inventory_items[item] # TAX NOT INCLUDED!
+        
+        instant_sell, sell_order = 0, 0
+        if sb_item.bz_sell_price != None:
+            instant_sell = sb_item.bz_sell_price * inventory_items[item]
+            sell_order = sb_item.bz_buy_price * inventory_items[item] # TAX NOT INCLUDED!
         
         # print(seconds, item, inventory_items[item], sb_item.npc_sell_price, npc)
         # input()
@@ -639,24 +642,16 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     minion_cost_recoverable = 0
     minion_cost_non_recoverable = 0
     
-    # Calculate setup cost for all levels up to and including current level
-    setup_cost = 0
-    for minion_level_info_object in minion.levels[:minion_level]:
-        
-        for item, amount in minion_level_info_object.items.items():
-            if "Wooden" in item or "Pelts" in item:  
-                # technically pelt has 3m value each but its whatever
-                continue
-            sb_item = skyblock_items.search_by_name(item)
-            setup_cost += sb_item.bz_sell_price * amount
+    # Calculate setup cost for all level materials at once
             
-    minion_cost_non_recoverable += setup_cost
+    minion_cost_non_recoverable += minion.get_cumulative_level_costs(minion_level, skyblock_items)
     
     if fuel != None and fuel.duration_hours == None: 
         item = skyblock_items.search_by_name(fuel.name)
         if item.bz_sell_price == None:
             skyblock_items.attempt_fetch_auction_data(item)
         minion_cost_recoverable += item.lowest_price()
+        
     if hopper: minion_cost_recoverable += skyblock_items.search_by_name(hopper.name).bz_sell_price
     if item_1: minion_cost_recoverable += skyblock_items.search_by_name(item_1.name).bz_sell_price
     if item_2: minion_cost_recoverable += skyblock_items.search_by_name(item_2.name).bz_sell_price
@@ -684,7 +679,6 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     # clamp data to int because a fraction of a coin is not. relevant.
     cost_of_fuel = int(cost_of_fuel)
     hopper_money = int(hopper_money)
-    setup_cost = int(setup_cost)
     
     coins_if_inventory_instant_sold_to_bz = int(coins_if_inventory_instant_sold_to_bz)
     coins_if_inventory_sell_order_to_bz = int(coins_if_inventory_sell_order_to_bz)
@@ -767,7 +761,7 @@ for minion in MINIONS:
     for fuel in FUEL_TYPES:
         
         # plasma bucket is same as everburning for non-combat minions
-        if fuel.name == "Everburning Flame" and minion.skill_type != "combat":
+        if fuel and fuel.name == "Everburning Flame" and minion.skill_type != "combat":
             continue
         
         
@@ -820,9 +814,9 @@ for minion in MINIONS:
                                 crystal_bonus_percent = minion.crystal_bonus_percentage
                                 
                                 
-                                for mithril_infusion in [True]: #[False, True]:
+                                for mithril_infusion in [False, True]:
                                     for free_will in [False, True]:
-                                        for postcard in [True]: #[False, True]:
+                                        for postcard in [False, True]:
                                             for beacon_percent_boost in [0, 10, 11]:
                                                 
                                                 for hopper in HOPPERS:

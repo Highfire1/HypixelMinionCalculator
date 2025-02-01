@@ -41,12 +41,13 @@ COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "Emerald": ItemCompactor("Emerald", 9, "Block of Emerald"), 
     "Nether Quartz": ItemCompactor("Nether Quartz", 4, "Block of Quartz"),
     "Snowball": ItemCompactor("Snowball", 4, "Snow Block"),
-    "Clay": ItemCompactor("Clay", 4, "Clay Block"),
+    "CLAY_BALL": ItemCompactor("CLAY_BALL", 4, "CLAY"),
     "Wheat": ItemCompactor("Wheat", 9, "Hay Bale"),
     "Melon": ItemCompactor("Melon", 9, "Melon Block"),
     "Red Mushroom": ItemCompactor("Red Mushroom", 9, "Red Mushroom Block"), 
     "Brown Mushroom": ItemCompactor("Brown Mushroom", 9, "Brown Mushroom Block"),
-    "Slimeball": ItemCompactor("Slimeball", 9, "Slime Block")
+    "Slimeball": ItemCompactor("Slimeball", 9, "Slime Block"),
+    "Brick": ItemCompactor("Brick", 4, "Bricks"),
 }
 
 def is_compactable(item:str) -> bool:
@@ -68,6 +69,7 @@ SUPER_COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "String": ItemCompactor("String", 160, "Enchanted String"),
     "Iron Ingot": ItemCompactor("Iron Ingot", 160, "Enchanted Iron"),
     "Enchanted Iron": ItemCompactor("Enchanted Iron", 160, "Enchanted Iron Block"),
+    "CLAY_BALL": ItemCompactor("CLAY_BALL", 160, "ENCHANTED_CLAY_BALL"),
 }
 
 

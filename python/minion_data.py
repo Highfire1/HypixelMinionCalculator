@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from bazaar import SkyblockItems
+
 # ============== MINION FUELS ==============
 
 @dataclass
@@ -11,16 +13,16 @@ class MinionFuelType:
     
 
 FUEL_TYPES = (
-    # None,
     # MinionFuelType("None", None, None, True),
-    # MinionFuelType("Block of Coal", 5, 5, False),
+    # missing coal/charcoal?
+    # MinionFuelType("Block of Coal", 5, 5, False), # NOT IN BAZAAR, DO NOT USE
     # MinionFuelType("Enchanted Bread", 12, 5, False),
     # MinionFuelType("Enchanted Coal", 24, 10, False),
     # MinionFuelType("Enchanted Charcoal", 24, 10, False),
     # MinionFuelType("Solar Panel", None, None, True),
     
-    # MinionFuelType("Enchanted Lava Bucket", None  , 25, False),
-    # MinionFuelType("Magma Bucket", None, 30, False),
+    MinionFuelType("Enchanted Lava Bucket", None  , 25, False),
+    MinionFuelType("Magma Bucket", None, 30, False),
     MinionFuelType("Plasma Bucket", None, 35, False),
     
     MinionFuelType("Hamster Wheel", 24, 50, False),
@@ -171,6 +173,24 @@ class MinionBase:
         
         self.levels:list[MLC] = levels
         self.actions:list[MinionAction] = actions
+        
+        self.__cumulative_level_costs = {}
+        
+    def get_cumulative_level_costs(self, level:int, skyblock_items: SkyblockItems):
+        if level not in self.__cumulative_level_costs:
+            cost = 0
+            for minion_level_info_object in self.levels[:level]:
+                
+                for item, amount in minion_level_info_object.items.items():
+                    if "Wooden" in item or "Pelts" in item:  
+                        # technically pelt has value but its whatever
+                        continue
+                    sb_item = skyblock_items.search_by_name(item)
+                    cost += sb_item.bz_sell_price * amount
+                        
+            self.__cumulative_level_costs[level] = cost
+            
+        return self.__cumulative_level_costs[level]
 
 
 ISLAND_MODIFIERS = ["Derpy", "Postcard", "Beacon"]
@@ -262,11 +282,36 @@ MINIONS = [
                 MinionDrop("Iron Ingot", 1, 20),
                 ]),
         ]
+    ),
+    
+    MinionBase("Clay",
+        skill_type="fishing",
+        crystal_bonus_percentage=0,
+        max_pet_bonus_percentage=0,
+        non_minion_spawning_exists=False,
+        non_minion_harvest_exists=True,
         
-               
-               
-               
-               ),
+        levels = [
+            MLC(1, 32, 1, {"CLAY_BALL": 80, "Wooden Shovel": 1}, None),
+            MLC(2, 32, 3, {"CLAY_BALL": 160}, None),
+            MLC(3, 30, 3, {"CLAY_BALL": 320}, None),
+            MLC(4, 30, 6, {"CLAY_BALL": 512}, None),
+            MLC(5, 27.5, 6, {"ENCHANTED_CLAY_BALL": 8}, None),
+            MLC(6, 27.5, 9, {"ENCHANTED_CLAY_BALL": 16}, None),
+            MLC(7, 24, 9, {"ENCHANTED_CLAY_BALL": 32}, None),
+            MLC(8, 24, 12, {"ENCHANTED_CLAY_BALL": 64}, None),
+            MLC(9, 20, 12, {"ENCHANTED_CLAY_BALL": 128}, None),
+            MLC(10, 20, 15, {"ENCHANTED_CLAY_BALL": 256}, None),
+            MLC(11, 16, 15, {"ENCHANTED_CLAY_BALL": 512}, None),
+        ],
+        
+        actions = [
+            MinionAction("spawn", None),
+            MinionAction("harvest", [
+                MinionDrop("CLAY_BALL", 4, 100), 
+                ]),
+        ]  
+    )
     
     
     

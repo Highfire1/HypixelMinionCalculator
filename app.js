@@ -268,13 +268,20 @@ function renderTable(result) {
                 td.textContent = cell === 0 ? "" : "T"
             } else if (i == 11 || i == 12 || i == 13 || i == 15) {
                 td.textContent = cell == 0 ? "" : cell + "%"
-            } else if (i > 18 && i < 30 || i == 32 || i == 33 || i == 34) {
+            } else if (i >= 32) {
                 td.textContent = fmtMoney(cell);
             } else if (i == 16 || i == 17 || i == 18) {
                 td.style.fontSize = '0.75em';
                 td.textContent = cell;
             } else if (i == 14) {
                 td.textContent = fmtSeconds(cell);
+
+            } else if (i > 18 && i < 25 ) {
+                td.textContent = fmtMoney(cell);
+
+            } else if (i >= 25 && i < 30) {
+                const apr = ((cell*365) / row[32]) * 100;
+                td.innerHTML = `${fmtMoney(cell)}<br>(${apr.toFixed(0)}% APR)`;
             } else {
                 td.textContent = cell;
             }
@@ -287,7 +294,7 @@ function renderTable(result) {
                 td.style.backgroundColor = '#ffcccd';
             }
             
-            if (i != 0 || true) {
+            if (i != 0 || false) {
                 tr.appendChild(td);
             }
             i++;

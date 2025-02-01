@@ -22,6 +22,7 @@
                     <option value="Sheep">Sheep</option>
                     <option value="Slime">Slime</option>
                     <option value="Tarantula">Tarantula</option>
+                    <option value="Clay">Clay</option>
                 </select>
             </div>
 
@@ -56,13 +57,13 @@
                 <label for="fuel-enchanted-lava-bucket"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                     <span>Enchanted Lava Bucket:</span>
-                    <input type="checkbox" id="fuel-enchanted-lava-bucket" disabled>
+                    <input type="checkbox" id="fuel-enchanted-lava-bucket">
                 </label>
 
                 <label for="fuel-magma-bucket"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                     <span>Magma Bucket:</span>
-                    <input type="checkbox" id="fuel-magma-bucket" disabled>
+                    <input type="checkbox" id="fuel-magma-bucket">
                 </label>
 
                 <label for="fuel-plasma-bucket"
@@ -163,7 +164,7 @@
                 <label for="upgrade-mithril-infusion"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                     <span>Mithril Infusion:</span>
-                    <input type="checkbox" id="upgrade-mithril-infusion" checked disabled>
+                    <input type="checkbox" id="upgrade-mithril-infusion" checked>
                 </label>
 
                 <label for="upgrade-free-will"
@@ -175,7 +176,7 @@
                 <label for="upgrade-postcard"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                     <span>Postcard:</span>
-                    <input type="checkbox" id="upgrade-postcard" checked disabled>
+                    <input type="checkbox" id="upgrade-postcard" checked>
                 </label>
 
                 <label for="upgrade-beacon"
@@ -319,7 +320,7 @@
     <table id="results-table" style="margin-right: 0px;">
         <thead>
             <tr>
-                <th>ID</th>
+                <!-- <th>ID</th> -->
                 <th>Minion</th>
                 <th>Lvl.</th>
                 <th>Fuel</th>
@@ -348,12 +349,12 @@
                 <th>PROFIT/DAY (inventory→ bz instant sell + hopper)</th>
                 <th>PROFIT/DAY (inventory→ npc sell + hopper)</th>
                 <th>PROFIT/DAY (inventory→ optimal sell + hopper)</th>
-                <th>PROFIT/DAY (hopper ONLY)</th>
+                <th>PROFIT/DAY (hopper ONLY)__</th>
                 <th style="font-size: 0.75em;">Inv. Full?</th>
                 <th style="font-size: 0.75em;">Fuel Empty?</th>
                 <th>Total cost of minion</th>
-                <th>Cost of minion</th>
                 <th>Cost of resellable/transferable minion items</th>
+                <th>Cost of minion</th>
             </tr>
         </thead>
         <tbody></tbody>

@@ -94,9 +94,13 @@ class SkyblockItems:
         return BazaarResponse(success=data["success"], lastUpdated=data["lastUpdated"], products=products)
 
     def search_by_name(self, name: str) -> SBItem:
+        if "_" in name:
+            return self.search_by_sb_id(name)
+        
         item = next((item for item in self.items if item.name == name), None)
         if item is None:
             raise ValueError(f"Item with name '{name}' not found")
+                
         return item
 
     def search_by_sb_id(self, sb_id: str) -> Optional[SBItem]:
