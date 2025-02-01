@@ -1,7 +1,114 @@
+function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+    if (from > to) {
+        fromSlider.value = to;
+        fromInput.value = to;
+    } else {
+        fromSlider.value = from;
+    }
+}
+    
+function controlToInput(toSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+    setToggleAccessible(toInput);
+    if (from <= to) {
+        toSlider.value = to;
+        toInput.value = to;
+    } else {
+        toInput.value = from;
+    }
+}
+
+function controlFromSlider(fromSlider, toSlider, fromInput) {
+  const [from, to] = getParsed(fromSlider, toSlider);
+  fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+  if (from > to) {
+    fromSlider.value = to;
+    fromInput.value = to;
+  } else {
+    fromInput.value = from;
+  }
+}
+
+function controlToSlider(fromSlider, toSlider, toInput) {
+  const [from, to] = getParsed(fromSlider, toSlider);
+  fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+  setToggleAccessible(toSlider);
+  if (from <= to) {
+    toSlider.value = to;
+    toInput.value = to;
+  } else {
+    toInput.value = from;
+    toSlider.value = from;
+  }
+}
+
+function getParsed(currentFrom, currentTo) {
+  const from = parseInt(currentFrom.value, 10);
+  const to = parseInt(currentTo.value, 10);
+  return [from, to];
+}
+
+function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+    const rangeDistance = to.max-to.min;
+    const fromPosition = from.value - to.min;
+    const toPosition = to.value - to.min;
+    controlSlider.style.background = `linear-gradient(
+      to right,
+      ${sliderColor} 0%,
+      ${sliderColor} ${(fromPosition)/(rangeDistance)*100}%,
+      ${rangeColor} ${((fromPosition)/(rangeDistance))*100}%,
+      ${rangeColor} ${(toPosition)/(rangeDistance)*100}%, 
+      ${sliderColor} ${(toPosition)/(rangeDistance)*100}%, 
+      ${sliderColor} 100%)`;
+}
+
+function setToggleAccessible(currentTarget) {
+  const toSlider = document.querySelector('#toSlider');
+  if (Number(currentTarget.value) <= 0 ) {
+    toSlider.style.zIndex = 2;
+  } else {
+    toSlider.style.zIndex = 0;
+  }
+}
+
+const fromSlider = document.querySelector('#fromSlider');
+const toSlider = document.querySelector('#toSlider');
+const fromInput = document.querySelector('#fromInput');
+const toInput = document.querySelector('#toInput');
+fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+setToggleAccessible(toSlider);
+
+fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
+toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
+
+
 document.addEventListener("DOMContentLoaded", async () => {
     const db = await initDatabase();
     const pageSize = 50; // Number of rows per page
     let currentPage = 1;
+
+    
+    const fromSlider = document.getElementById("fromSlider");
+    const toSlider = document.getElementById("toSlider");
+    const fromInput = document.getElementById("fromInput");
+    const toInput = document.getElementById("toInput");
+
+    fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+    toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+    fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
+    toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
+
+    document.getElementById("apply-filters").addEventListener("click", () => {
+        const filters = getFilters();
+        currentPage = 1; // Reset to the first page
+        updateTable(db, filters, currentPage, pageSize);
+    });
+
 
     // Set initial state for calculations checkbox
     const showCalculations = document.getElementById("show-calculations");
@@ -62,6 +169,9 @@ function getFilters() {
 
     const sortColumn = document.getElementById("sort-column").value;
     const sortOrder = document.getElementById("sort-order").value;
+
+    const minCost = fromSlider.value * 1000000;
+    const maxCost = toSlider.value * 1000000;
 
     const ts1 = document.querySelector("#seconds-300").checked || false;
     const ts2 = document.querySelector("#seconds-86400").checked || false;
@@ -136,7 +246,9 @@ function getFilters() {
         timescales: timescales,
         upgrades: upgrades,
         unselectedItems: unselectedItems,
-        fuels: fuels
+        fuels: fuels,
+        minCost: minCost,
+        maxCost: maxCost
     };
 }
 
@@ -179,6 +291,11 @@ function updateTable(db, filters, page, pageSize) {
     if (!filters.upgrades.includes("Beacon")) { query += ` AND beacon_boost_percent = 0`; }
     if (!filters.upgrades.includes("Pet Bonus")) { query += ` AND pet_bonus_percent = 0`; }
     if (!filters.upgrades.includes("Crystal")) { query += ` AND crystal_bonus_percent = 0` };
+
+    
+    if (filters.minCost !== undefined && filters.maxCost !== undefined) {
+        query += ` AND minion_cost_total BETWEEN ${filters.minCost} AND ${filters.maxCost}`;
+    }
 
     
 
