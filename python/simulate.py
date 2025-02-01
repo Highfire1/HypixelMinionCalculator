@@ -787,14 +787,16 @@ for minion in MINIONS:
                                 crystal_bonus_percent = minion.crystal_bonus_percentage
                                 
                                 
-                                for mithril_infusion in [False, True]:
+                                for mithril_infusion in [True]: #[False, True]:
                                     for free_will in [False, True]:
-                                        for postcard in [False, True]:
+                                        for postcard in [True]: #[False, True]:
                                             for beacon_percent_boost in [0, 10, 11]:
                                                 
                                                 for hopper in HOPPERS:
                                             
-                                                    time_increments = [60*5, 60*60, 60*60*6, 60*60*12, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*365]
+                                                    #time_increments = [60*5, 60*60, 60*60*6, 60*60*12, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*365]
+                                                    
+                                                    time_increments = [60*5, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*124]
                                                     
                                                     for seconds in time_increments:
                                                         sim = simulate_unloaded_minion_output(minion, level, fuel, hopper, item_1, item_2, storage, mithril_infusion, free_will, postcard, beacon_percent_boost, pet_bonus_percent, crystal_bonus, seconds)
