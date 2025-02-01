@@ -19,43 +19,19 @@
             <p style="margin-top: 0px;">Made by Highfire1. Github repository: <a
                     href="https://github.com/Highfire1/HypixelMinionCalculator">here</a>.</p>
 
-            <div style="font-size: 1.2em;">
-                <label for="minion">Minion:</label>
-                <select id="minion" style="font-size: 1.05em;">
-                    <option value="All">All</option>
-                    <option value="Sheep">Sheep</option>
-                    <option value="Slime">Slime</option>
-                    <option value="Tarantula">Tarantula</option>
-                    <option value="Clay">Clay</option>
-                </select>
+            <div>
+                <label for="minion">Minion type:
+                    <br>
+                    <select id="minion" style="font-size: 1.05em;">
+                        <option value="All">All</option>
+                        <option value="Sheep">Sheep</option>
+                        <option value="Slime">Slime</option>
+                        <option value="Tarantula">Tarantula</option>
+                        <option value="Clay">Clay</option>
+                    </select>
+                </label>
             </div>
 
-            <div style="font-size: 1.2em;">
-                <label for="sort-column">Sort By:</label>
-                <select id="sort-column" style="font-size: 1.05em;">
-                    <option value="profit_24h_only_hopper">PROFIT/DAY (hopper only)</option>
-                    <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz +
-                        hopper)</option>
-                    <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell,
-                        sell_order, npc_price) + hopper)</option>
-                    <option value="APR_if_inventory_sell_order_to_bz">Annual Percentage Rate (instant sell inv. at bz +
-                        hopper)</option>
-                    <option value="APR_only_hopper">Annual Percentage Rate (hopper only)</option>
-                    <!-- <option value="hopper_coins">Hopper Coins (NOT PROFIT)</option> -->
-                    <option value="percentage_boost">Percentage Boost</option>
-                    <option value="id">id</option>
-                </select>
-                <br>
-
-                <label for="sort-order">Order:</label>
-                <select id="sort-order" style="font-size: 1.05em;">
-                    <option value="DESC">High → Low</option>
-                    <option value="ASC">Low → High</option>
-                </select>
-
-                <!-- <label for="free-will">Exclude Free Will:</label>
-            <input type="checkbox" id="free-will"> -->
-            </div>
 
             <div>
                 <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Fuels:</p>
@@ -256,10 +232,45 @@
                     <span>Show Detailed Calculations:</span>
                     <input type="checkbox" id="show-calculations">
                 </label>
+
+                <label for="show-profits"
+                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                    <span>Show other profit calculations:</span>
+                    <input type="checkbox" id="show-profits">
+                </label>
             </div>
 
             <br />
 
+            <div>
+                <label for="sort-column"><strong>Sort results by:</strong></label>
+
+                <br>
+                <select id="sort-column" style="font-size: 1.05em;">
+                    <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz +
+                        hopper)</option>
+                    <option value="profit_24h_only_hopper">PROFIT/DAY (hopper only)</option>
+                    <!-- <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell,
+                        sell_order, npc_price) + hopper)</option> -->
+                    <option value="APR_if_inventory_sell_order_to_bz">Annual Percentage Rate (instant sell inv. at bz +
+                        hopper)</option>
+                    <option value="APR_only_hopper">Annual Percentage Rate (hopper only)</option>
+                    <!-- <option value="hopper_coins">Hopper Coins (NOT PROFIT)</option> -->
+                    <option value="percentage_boost">Percentage Boost</option>
+                    <!-- <option value="id">id</option> -->
+                </select>
+                <br>
+
+                <label for="sort-order">Order:</label>
+                <select id="sort-order" style="font-size: 1.05em;">
+                    <option value="DESC">High → Low</option>
+                    <option value="ASC">Low → High</option>
+                </select>
+
+                <!-- <label for="free-will">Exclude Free Will:</label>
+            <input type="checkbox" id="free-will"> -->
+            </div>
+            <br>
 
             <label>Total cost of minion:</label>
             <br />
@@ -283,7 +294,9 @@
                 </div>
             </div>
 
-            <button id="apply-filters" style="width: fit-content; font-size:1.05em">Apply Filters</button>
+
+            <button id="apply-filters"
+                style="width: fill; font-size:1.20em; background-color:cornsilk; height:50px; border-radius: 8px;">Apply Filters</button>
         </div>
 
 
@@ -293,7 +306,8 @@
 
             <h3>About</h3>
             <ul>
-                <li>This database contains 97 344 unique combinations of sheep, slime, tarantula, and clay minions. This covers almost all
+                <li>This database contains 97 344 unique combinations of sheep, slime, tarantula, and clay minions. This
+                    covers almost all
                     fuel, item, enhancement, and any other option you can think of. This way we can be sure that we are
                     calculating the most effective minion setup.</li>
 
@@ -356,8 +370,8 @@
 
             <button onclick="document.getElementById('INFOBOX').style.display = 'none'"
                 style="float: left; font-size:1.1em">Got it, hide the infobox</button>
-                <br>
-                <br>
+            <br>
+            <br>
         </div>
 
     </div>
@@ -391,11 +405,11 @@
                 <th class="calculation-column">Inv. BZ Instant Sell</th>
                 <th class="calculation-column">Inv. NPC Sell</th>
                 <th class="calculation-column">Inv. Optimal Sell</th>
-                <th>PROFIT/DAY (inventory→ bz sell order + hopper)</th>
+                <th class="profit-column">PROFIT/DAY (inventory→ bz sell order + hopper)</th>
                 <th>PROFIT/DAY (inventory→ bz instant sell + hopper)</th>
-                <th>PROFIT/DAY (inventory→ npc sell + hopper)</th>
-                <th>PROFIT/DAY (inventory→ optimal sell + hopper)</th>
-                <th>PROFIT/DAY (hopper ONLY)__</th>
+                <th class="profit-column">PROFIT/DAY (inventory→ npc sell + hopper)</th>
+                <th class="profit-column">PROFIT/DAY (inventory→ optimal sell + hopper)</th>
+                <th>PROFIT/DAY (hopper ONLY)</th>
                 <th>APR (inventory→ bz instant sell + hopper)</th>
                 <th>APR (hopper ONLY)</th>
                 <th style="font-size: 0.75em;">Inv. Full?</th>

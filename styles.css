@@ -23,11 +23,11 @@ th {
     background-color: #f4f4f4;
 }
 
-.calculation-column {
+.calculation-column, .profit-column {
     transition: all 0.3s ease;
 }
 
-.calculation-column.hidden {
+.calculation-column.hidden, .profit-column.hidden {
     display: none !important; /* Added !important to ensure it overrides other styles */
 }
 

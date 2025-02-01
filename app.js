@@ -118,6 +118,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const event = new Event('change');
     showCalculations.dispatchEvent(event);
 
+    const showOtherProfits = document.getElementById("show-profits");
+    showOtherProfits.checked = false;
+
+    // Trigger initial state
+    const event2 = new Event('change');
+    showOtherProfits.dispatchEvent(event2);
+
 
     document.getElementById("apply-filters").addEventListener("click", () => {
         const filters = getFilters();
@@ -145,6 +152,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const calculationColumns = document.querySelectorAll('th.calculation-column, td.calculation-column');
     calculationColumns.forEach(col => {
         if (e.target.checked) {
+            col.classList.remove('hidden');
+        } else {
+            col.classList.add('hidden');
+        }
+    });
+
+    const e2 = { target: document.getElementById("show-profits") };
+    const profitColumns = document.querySelectorAll('th.profit-column, td.profit-column');
+    profitColumns.forEach(col => {
+        if (e2.target.checked) {
             col.classList.remove('hidden');
         } else {
             col.classList.add('hidden');
@@ -356,6 +373,16 @@ function renderTable(result) {
             col.classList.add('hidden');
         }
     });
+
+    const e2 = { target: document.getElementById("show-profits") };
+    const profitColumns = document.querySelectorAll('th.profit-column, td.profit-column');
+    profitColumns.forEach(col => {
+        if (e2.target.checked) {
+            col.classList.remove('hidden');
+        } else {
+            col.classList.add('hidden');
+        }
+    });
     
     const tbody = document.querySelector("#results-table tbody");
     tbody.innerHTML = ""; // Clear existing rows
@@ -369,11 +396,21 @@ function renderTable(result) {
         const showCalculations = document.getElementById("show-calculations").checked;
         const calculationIndexes = [16, 17, 18, 19, 20, 21, 22, 23, 24];
 
+        const showOtherProfits = document.getElementById("show-profits").checked;
+        const profitIndexes = [25, 27, 28]
+
         row.forEach((cell, index) => {
             const td = document.createElement("td");
             if (calculationIndexes.includes(index)) {
                 td.classList.add('calculation-column');
                 if (!showCalculations) {
+                    td.classList.add('hidden');
+                }
+            }
+
+            if (profitIndexes.includes(index)) {
+                td.classList.add('profit-column');
+                if (!showOtherProfits) {
                     td.classList.add('hidden');
                 }
             }
