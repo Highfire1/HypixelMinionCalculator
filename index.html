@@ -198,6 +198,7 @@
 
 
             <!-- HIDE -->
+             <!-- time_increments = [60*5, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*124]-->
             <div>
                 <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Simulated time lengths:</p>
 
@@ -207,28 +208,10 @@
                     <input type="checkbox" id="seconds-300">
                 </label>
 
-                <label for="seconds-3600"
-                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                    <span>1h:</span>
-                    <input type="checkbox" id="seconds-3600">
-                </label>
-
-                <label for="seconds-21600"
-                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                    <span>6h:</span>
-                    <input type="checkbox" id="seconds-21600">
-                </label>
-
-                <label for="seconds-43200"
-                    style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                    <span>12h:</span>
-                    <input type="checkbox" id="seconds-43200">
-                </label>
-
                 <label for="seconds-86400"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                     <span>24h:</span>
-                    <input type="checkbox" id="seconds-86400" checked>
+                    <input type="checkbox" id="seconds-86400">
                 </label>
 
                 <label for="seconds-172800"
@@ -249,10 +232,10 @@
                     <input type="checkbox" id="seconds-1209600">
                 </label>
 
-                <label for="seconds-31536000"
+                <label for="seconds-10713600"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                    <span>1y:</span>
-                    <input type="checkbox" id="seconds-31536000" checked>
+                    <span>124d (every derpy):</span>
+                    <input type="checkbox" id="seconds-10713600" checked>
                 </label>
             </div>
 
