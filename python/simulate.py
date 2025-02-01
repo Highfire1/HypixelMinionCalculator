@@ -218,6 +218,8 @@ class MinionSimulationOutput:
     profit_24h_if_inventory_sold_optimally: int
     profit_24h_only_hopper: int
     
+    APR_if_inventory_sell_order_to_bz: int
+    APR_only_hopper: int
     # total_coins_if_sell_order_to_bz: int
     # total_coins_if_instant_sold_to_bz: int
     # total_coins_if_sold_optimally: int
@@ -268,6 +270,9 @@ class MinionSimulationResult(SQLModel, table=True):
     profit_24h_if_inventory_sold_to_npc: int
     profit_24h_if_inventory_sold_optimally: int
     profit_24h_only_hopper: int
+    
+    APR_if_inventory_sell_order_to_bz: int
+    APR_only_hopper: int
     
     inventory_full: bool
     fuel_empty: bool
@@ -674,7 +679,10 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     minion_cost_total = minion_cost_recoverable + minion_cost_non_recoverable
     
     # generate cash / day
-    
+
+    # generate APR
+    APR_if_inventory_sell_order_to_bz = ((profit_24h_if_inventory_instant_sold_to_bz * 365)/minion_cost_total) * 100
+    APR_only_hopper = ((profit_24h_only_hopper * 365)/minion_cost_total) * 100
     
     # clamp data to int because a fraction of a coin is not. relevant.
     cost_of_fuel = int(cost_of_fuel)
@@ -684,6 +692,10 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     coins_if_inventory_sell_order_to_bz = int(coins_if_inventory_sell_order_to_bz)
     coins_if_inventory_sold_to_npc = int(coins_if_inventory_sold_to_npc)
     coins_if_inventory_sold_optimally = int(coins_if_inventory_sold_optimally)
+    
+    APR_if_inventory_sell_order_to_bz = int(APR_if_inventory_sell_order_to_bz)
+    APR_only_hopper = int(APR_only_hopper)
+
     
     minion_cost_total = int(minion_cost_total)
     minion_cost_recoverable = int(minion_cost_recoverable)
@@ -709,6 +721,9 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
         profit_24h_if_inventory_sold_to_npc=profit_24h_if_inventory_sold_to_npc,
         profit_24h_if_inventory_sold_optimally=profit_24h_if_inventory_sold_optimally,
         profit_24h_only_hopper=profit_24h_only_hopper,
+        
+        APR_if_inventory_sell_order_to_bz=APR_if_inventory_sell_order_to_bz,
+        APR_only_hopper=APR_only_hopper,
         
         # total_coins_if_sell_order_to_bz=0,
         # total_coins_if_instant_sold_to_bz=0,
@@ -859,6 +874,8 @@ for minion in MINIONS:
                                                             profit_24h_if_inventory_sold_to_npc=sim.profit_24h_if_inventory_sold_to_npc,
                                                             profit_24h_if_inventory_sold_optimally=sim.profit_24h_if_inventory_sold_optimally,
                                                             profit_24h_only_hopper=sim.profit_24h_only_hopper,
+                                                            APR_if_inventory_sell_order_to_bz=sim.APR_if_inventory_sell_order_to_bz,
+                                                            APR_only_hopper=sim.APR_only_hopper,
                                                             cost_of_fuel=sim.cost_of_fuel,
                                                             inventory_full=sim.inventory_full,
                                                             fuel_empty=sim.fuel_empty,

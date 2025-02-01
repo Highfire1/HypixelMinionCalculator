@@ -30,11 +30,10 @@
                 <label for="sort-column">Sort By:</label>
                 <select id="sort-column" style="font-size: 1.05em;">
                     <option value="profit_24h_only_hopper">PROFIT/DAY (hopper only)</option>
-                    <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz +
-                        hopper)
-                    </option>
-                    <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell,
-                        sell_order, npc_price) + hopper)</option>
+                    <option value="profit_24h_if_inventory_instant_sold_to_bz">PROFIT/DAY (instant sell inv. at bz + hopper)</option>
+                    <option value="profit_24h_if_inventory_sell_order_to_bz">PROFIT/DAY (sell inv. to max(instant_sell, sell_order, npc_price) + hopper)</option>
+                    <option value="APR_if_inventory_sell_order_to_bz">Annual Percentage Rate (instant sell inv. at bz + hopper)</option>
+                    <option value="APR_only_hopper">Annual Percentage Rate (hopper only)</option>
                     <!-- <option value="hopper_coins">Hopper Coins (NOT PROFIT)</option> -->
                     <option value="percentage_boost">Percentage Boost</option>
                     <option value="id">id</option>
@@ -263,7 +262,7 @@
 
             <h3>About</h3>
             <ul>
-                <li>This database contains 116640 unique combinations of sheep and slime minions. This covers almost all
+                <li>This database contains 97344 unique combinations of sheep and slime minions. This covers almost all
                     fuel, item, enhancement, and any other option you can think of. This way we can be sure that we are
                     calculating the most effective minion setup.</li>
                 
@@ -350,6 +349,8 @@
                 <th>PROFIT/DAY (inventory→ npc sell + hopper)</th>
                 <th>PROFIT/DAY (inventory→ optimal sell + hopper)</th>
                 <th>PROFIT/DAY (hopper ONLY)__</th>
+                <th>APR (inventory→ bz instant sell + hopper)</th>
+                <th>APR (hopper ONLY)</th>
                 <th style="font-size: 0.75em;">Inv. Full?</th>
                 <th style="font-size: 0.75em;">Fuel Empty?</th>
                 <th>Total cost of minion</th>
