@@ -18,9 +18,10 @@ FUEL_TYPES = (
     # MinionFuelType("Enchanted Coal", 24, 10, False),
     # MinionFuelType("Enchanted Charcoal", 24, 10, False),
     # MinionFuelType("Solar Panel", None, None, True),
-    MinionFuelType("Enchanted Lava Bucket", None, 25, False),
-    MinionFuelType("Magma Bucket", None, 30, False),
-    MinionFuelType("Plasma Bucket", None, 30, False),
+    
+    # MinionFuelType("Enchanted Lava Bucket", None  , 25, False),
+    # MinionFuelType("Magma Bucket", None, 30, False),
+    MinionFuelType("Plasma Bucket", None, 35, False),
     
     MinionFuelType("Hamster Wheel", 24, 50, False),
     MinionFuelType("Foul Flesh", 5, 90, False),

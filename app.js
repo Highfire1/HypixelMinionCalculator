@@ -282,7 +282,12 @@ function renderTable(result) {
             if (i == 26 || i == 29) {
                 td.style.backgroundColor = '#90EE90';
             }
-            if (i != 0) {
+
+            if (i == 32) {
+                td.style.backgroundColor = '#ffcccd';
+            }
+            
+            if (i != 0 || true) {
                 tr.appendChild(td);
             }
             i++;

@@ -766,6 +766,10 @@ for minion in MINIONS:
         
     for fuel in FUEL_TYPES:
         
+        # plasma bucket is same as everburning for non-combat minions
+        if fuel.name == "Everburning Flame" and minion.skill_type != "combat":
+            continue
+        
         
         for item_1_index, item_1 in enumerate(ITEMS):
             for item_2_index, item_2 in enumerate(ITEMS):
