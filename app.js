@@ -282,8 +282,9 @@ function renderTable(result) {
             if (i == 26 || i == 29) {
                 td.style.backgroundColor = '#90EE90';
             }
-
-            tr.appendChild(td);
+            if (i != 0) {
+                tr.appendChild(td);
+            }
             i++;
         });
         tbody.appendChild(tr);
