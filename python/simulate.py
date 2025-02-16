@@ -898,13 +898,13 @@ for minion in MINIONS:
 
 print(f"{len(simulation_outputs)} combinations generated.")
 
-print("Saving to json...")
+# print("Saving to json...")
 
-filepath = "data/sheep_minion_combinations.json"
-with open(filepath, 'w') as fi:
-    json.dump(simulation_outputs, fi, default=lambda k: k.__dict__, indent=4)
+# filepath = "data/sheep_minion_combinations.json"
+# with open(filepath, 'w') as fi:
+#     json.dump(simulation_outputs, fi, default=lambda k: k.__dict__, indent=4)
     
-print(f"Saved to {filepath}.")
+# print(f"Saved to {filepath}.")
 
 
 if os.path.exists("data/sheep_minion_combinations.db"):
