@@ -4,7 +4,7 @@ async function initDatabase() {
     if (window.location.pathname == "/table.html") { // localhost
         db_path = "/data/sheep_minion_combinations.db"
     } else { // server
-        db_path = window.location.pathname + "/data/sheep_minion_combinations.db"
+        db_path = window.location.pathname + "/../data/sheep_minion_combinations.db"
     }
     const response = await fetch(db_path);
     const buffer = await response.arrayBuffer();
