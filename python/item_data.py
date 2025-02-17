@@ -14,7 +14,8 @@ SMELT_MAP = {
         "Dark Oak Wood": "Coal",
         "Acacia Wood": "Coal",
         "Clay": "Brick",
-        "Cactus": "Cactus Green"
+        "Cactus": "Cactus Green",
+        "Oak Wood" : "Coal",
     }
 
 def is_smeltable(item:str) -> bool:
@@ -70,6 +71,9 @@ SUPER_COMPACTOR_MAP:dict[str, ItemCompactor] = {
     "Iron Ingot": ItemCompactor("Iron Ingot", 160, "Enchanted Iron"),
     "Enchanted Iron": ItemCompactor("Enchanted Iron", 160, "Enchanted Iron Block"),
     "CLAY_BALL": ItemCompactor("CLAY_BALL", 160, "ENCHANTED_CLAY_BALL"),
+    "Oak Wood": ItemCompactor("Oak Wood", 160, "Enchanted Oak Wood"),
+    "Coal": ItemCompactor("Coal", 160, "Enchanted Coal"),
+    "Magma Cream": ItemCompactor("Magma Cream", 160, "Enchanted Magma Cream"),
 }
 
 

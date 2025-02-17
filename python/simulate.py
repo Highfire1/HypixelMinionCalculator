@@ -1,12 +1,6 @@
 """
 FAQ:
 
- Q: Where are Farming Crystal and Pet Boosts
- A: THEY ARE NOW INCLUDED IN AFK CALCULATIONS? 
- THERE IS NO LONGER A NEED to AFK on your island for these bonuses to apply.
- However, you must make sure that your pet is equipped.
- (this also includes postcard)
-
  q: where inferno minion?
  It's too complicated for this interface, use the page on the wiki: https://hypixel-skyblock.fandom.com/wiki/User:Voball/Sandbox-Inferno_Minions
 
@@ -660,8 +654,10 @@ def simulate_unloaded_minion_output(minion: MinionBase, minion_level: int, fuel:
     if hopper: minion_cost_recoverable += skyblock_items.search_by_name(hopper.name).bz_sell_price
     if item_1: minion_cost_recoverable += skyblock_items.search_by_name(item_1.name).bz_sell_price
     if item_2: minion_cost_recoverable += skyblock_items.search_by_name(item_2.name).bz_sell_price
-    # yes it's not a 100% chance but it's close enough and idc
+    if storage: minion_cost_recoverable += skyblock_items.search_by_name(f"{storage.name} Storage").bz_sell_price
     if mithril_infusion: minion_cost_non_recoverable += skyblock_items.search_by_name("Mithril Infusion").bz_sell_price
+    
+    # yes it's not a 100% chance but it's close enough and you recover the price by selling the postcard
     if free_will: minion_cost_non_recoverable += skyblock_items.search_by_name("Free Will").bz_sell_price
     
     if postcard: 
@@ -801,32 +797,36 @@ for minion in MINIONS:
                 
                 # TODO: confirm this is true
                 # you can't use dwarven super compactor + super compactor 3000
-                # if item_1.name == "Super Compactor 3000" and item_2.name == "Dwarven Super Compactor" or item_1.name == "Dwarven Super Compactor" and item_2.name == "Super Compactor 3000":
-                #     continue
+                if item_1.name == "Super Compactor 3000" and item_2.name == "Dwarven Super Compactor" or item_1.name == "Dwarven Super Compactor" and item_2.name == "Super Compactor 3000":
+                    continue
                 
                 for storage in STORAGES:
                     
+                    
+                    # if the final level requires non-cash grind then we should also show the t11 version
+                    # for now only sheep minion
                     levels = [len(minion.levels)]
-                    # if the final level is complicated then we should also show the t11 version
-                    if minion.levels[-1].npc_required:
+                    if minion.name == "Sheep":
                         levels = [len(minion.levels)-1, len(minion.levels)]
                     
                     for level in levels:
                         
                         
-                        for pet_bonus_percent in [0, True]:
+                        for pet_bonus_percent in [0]: #, True]: // pet bonus don't work offline
                             
-                            if pet_bonus_percent:
-                                if minion.max_pet_bonus_percentage == 0:
-                                    continue
-                                else:
-                                    pet_bonus_percent = minion.max_pet_bonus_percentage
+                            # if pet_bonus_percent:
+                            #     if minion.max_pet_bonus_percentage == 0:
+                            #         continue
+                            #     else:
+                            #         pet_bonus_percent = minion.max_pet_bonus_percentage
                             
                                 
-                            for crystal_bonus in [0, True]:
-                                if crystal_bonus == True and minion.crystal_bonus_percentage == 0:
-                                    continue
-                                crystal_bonus_percent = minion.crystal_bonus_percentage
+                            for crystal_bonus in [0]: #, True]: // crystal doesn't work offline
+                                crystal_bonus_percent = 0
+                                # the following code is broken
+                                # if crystal_bonus == True and minion.crystal_bonus_percentage == 0:
+                                #     continue
+                                # crystal_bonus_percent = minion.crystal_bonus_percentage
                                 
                                 
                                 for mithril_infusion in [False, True]:
@@ -838,7 +838,7 @@ for minion in MINIONS:
                                             
                                                     #time_increments = [60*5, 60*60, 60*60*6, 60*60*12, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*365]
                                                     
-                                                    time_increments = [60*5, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*124]
+                                                    time_increments = [60*60, 60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*124]
                                                     
                                                     for seconds in time_increments:
                                                         sim = simulate_unloaded_minion_output(minion, level, fuel, hopper, item_1, item_2, storage, mithril_infusion, free_will, postcard, beacon_percent_boost, pet_bonus_percent, crystal_bonus, seconds)
@@ -898,6 +898,15 @@ for minion in MINIONS:
 
 print(f"{len(simulation_outputs)} combinations generated.")
 
+
+# decrease size of db we send to client
+if True:
+    for s in simulation_outputs:
+        s.raw_item_drops = ""
+        s.in_inventory = ""
+        s.sold_to_hopper = ""
+        
+
 # print("Saving to json...")
 
 # filepath = "data/sheep_minion_combinations.json"
@@ -906,16 +915,31 @@ print(f"{len(simulation_outputs)} combinations generated.")
     
 # print(f"Saved to {filepath}.")
 
-
-if os.path.exists("data/sheep_minion_combinations.db"):
+try:
+    if os.path.exists("data/sheep_minion_combinations.db"):
+        os.remove("data/sheep_minion_combinations.db")
+except Exception as e:
+    print(f"Couldn't remove database: {e}")
+    input("Hit any key to try again:")
+    
     os.remove("data/sheep_minion_combinations.db")
+    
+    
 engine = create_engine("sqlite:///data/sheep_minion_combinations.db")
 SQLModel.metadata.create_all(engine)
 
 print("Saving to database...")
 
-with Session(engine) as session:
-    session.add_all(simulation_outputs)
-    session.commit()
+try:
+    with Session(engine) as session:
+        session.add_all(simulation_outputs)
+        session.commit()
+except Exception as e:
+    print(f"Couldn't save database: {e}")
+    input("Hit any key to try again:")
+    
+    with Session(engine) as session:
+        session.add_all(simulation_outputs)
+        session.commit()
 
-print("Saved to database")
+print("Saved to database.")

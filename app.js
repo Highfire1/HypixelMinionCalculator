@@ -182,7 +182,10 @@ const allItems = [
   ];
 
 function getFilters() {
-    const minionFilter = document.getElementById("minion").value;
+    const minionTypes = [];
+    document.querySelectorAll('input[id^="minion-"]:checked').forEach(checkbox => {
+        minionTypes.push(checkbox.value);
+    });
 
     const sortColumn = document.getElementById("sort-column").value;
     const sortOrder = document.getElementById("sort-order").value;
@@ -190,7 +193,7 @@ function getFilters() {
     const minCost = fromSlider.value * 1000000;
     const maxCost = toSlider.value * 1000000;
 
-    const ts1 = document.querySelector("#seconds-300").checked || false;
+    const ts1 = document.querySelector("#seconds-3600").checked || false;
     const ts2 = document.querySelector("#seconds-86400").checked || false;
     const ts3 = document.querySelector("#seconds-172800").checked || false;
     const ts4 = document.querySelector("#seconds-604800").checked || false;
@@ -199,7 +202,7 @@ function getFilters() {
     
     const timescales = [
         0, // Always include 0 seconds so if empty, it will return nothing
-        ts1 ? 300 : null,
+        ts1 ? 3600 : null,
         ts2 ? 86400 : null,
         ts3 ? 172800 : null,
         ts4 ? 604800 : null,
@@ -233,8 +236,8 @@ function getFilters() {
         'Free Will': 'free-will',
         'Postcard': 'postcard',
         'Beacon': 'beacon',
-        'Pet Bonus': 'pet',
-        'Crystal': 'crystal',
+        // 'Pet Bonus': 'pet',
+        // 'Crystal': 'crystal',
     };
 
     let upgrades = Object.entries(upgradeMappings)
@@ -258,7 +261,7 @@ function getFilters() {
     });
 
     return {
-        minion: minionFilter,
+        minions: minionTypes,
         sort: { column: sortColumn, order: sortOrder },
         timescales: timescales,
         upgrades: upgrades,
@@ -286,8 +289,8 @@ function updateTable(db, filters, page, pageSize) {
     const offset = (page - 1) * pageSize;
     let query = "SELECT * FROM MinionSimulationResult WHERE 1=1";
 
-    if (filters.minion && filters.minion != "All") {
-        query += ` AND minion LIKE '%${filters.minion}%'`;
+    if (filters.minions && filters.minions.length > 0) {
+        query += ` AND minion IN ('${filters.minions.join("','")}')`;
     }
 
     if (filters.timescales && filters.timescales.length > 0) {

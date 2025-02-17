@@ -19,18 +19,28 @@
             <p style="margin-top: 0px;">Made by Highfire1. Github repository: <a
                     href="https://github.com/Highfire1/HypixelMinionCalculator">here</a>.</p>
 
-            <div>
-                <label for="minion">Minion type:
-                    <br>
-                    <select id="minion" style="font-size: 1.05em;">
-                        <option value="All">All</option>
-                        <option value="Sheep">Sheep</option>
-                        <option value="Slime">Slime</option>
-                        <option value="Tarantula">Tarantula</option>
-                        <option value="Clay">Clay</option>
-                    </select>
-                </label>
-            </div>
+                    <div>
+                        <label>Minion type:</label>
+                        <br>
+                        <label for="minion-sheep" style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                            <input type="checkbox" id="minion-sheep" value="Sheep"> Sheep
+                        </label>
+                        <label for="minion-slime" style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                            <input type="checkbox" id="minion-slime" value="Slime"> Slime
+                        </label>
+                        <label for="minion-tarantula" style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                            <input type="checkbox" id="minion-tarantula" value="Tarantula"> Tarantula
+                        </label>
+                        <label for="minion-clay" style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                            <input type="checkbox" id="minion-clay" value="Clay"> Clay
+                        </label>
+                        <label for="minion-oak" style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                            <input type="checkbox" id="minion-oak" value="Oak"> Oak
+                        </label>
+                        <label for="minion-magma-cube" style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
+                            <input type="checkbox" id="minion-magma-cube" value="Magma Cube"> Magma Cube
+                        </label>
+                    </div>
 
 
             <div>
@@ -167,17 +177,17 @@
                     <input type="checkbox" id="upgrade-beacon" checked>
                 </label>
 
-                <label for="upgrade-pet"
+                <!-- <label for="upgrade-pet"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                     <span>Pet Bonus:</span>
-                    <input type="checkbox" id="upgrade-pet" checked>
+                    <input type="checkbox" id="upgrade-pet" disabled>
                 </label>
 
                 <label for="upgrade-crystal"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
                     <span>Crystal:</span>
-                    <input type="checkbox" id="upgrade-crystal" checked>
-                </label>
+                    <input type="checkbox" id="upgrade-crystal" disabled>
+                </label> -->
             </div>
 
 
@@ -186,10 +196,10 @@
             <div>
                 <p style="padding-top: 10px; margin:0px; padding-bottom:5px">Simulated time lengths:</p>
 
-                <label for="seconds-300"
+                <label for="seconds-3600"
                     style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;">
-                    <span>5m:</span>
-                    <input type="checkbox" id="seconds-300">
+                    <span>1h:</span>
+                    <input type="checkbox" id="seconds-3600">
                 </label>
 
                 <label for="seconds-86400"
@@ -277,13 +287,13 @@
             <div class="range_container">
 
                 <div class="sliders_control">
-                    <input id="fromSlider" type="range" value="10" min="0" max="500" />
+                    <input id="fromSlider" type="range" value="5" min="0" max="500" />
                     <input id="toSlider" type="range" value="400" min="0" max="500" />
                 </div>
                 <div class="form_control">
                     <div class="form_control_container">
                         <div class="form_control_container__time">Min ($M)</div>
-                        <input class="form_control_container__time__input" type="number" id="fromInput" value="10"
+                        <input class="form_control_container__time__input" type="number" id="fromInput" value="5"
                             min="0" max="500" />
                     </div>
                     <div class="form_control_container">
@@ -327,9 +337,7 @@
                     actually simulating your minion output for a given timeframe, this lets you see the potential money
                     you could make.
                 </li>
-                <li>Postcard, Crystal, Beacon and Pet Boost should all work offline now. However, you must have the
-                    relevant pet equipped when you load the island for the bonus to apply.</li>
-                <li>Bazaar prices are as of February 1st, 2025.</li>
+                <li>Bazaar prices are as of February 16th, 2025.</li>
                 <!-- <li>"PROFIT/DAY (inventory→ optimal sell + hopper)" means that you will sell to the highest seller (sell
                     order or npc). This is impractical and selling millions of corrupted frags to npc will kill you, it
                     is more about determining the upper bound.</li> -->

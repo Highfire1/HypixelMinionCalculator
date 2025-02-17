@@ -57,6 +57,7 @@ class SkyblockItems:
     def __init__(self, only_bazaar=True):
         self.bazaar_data = self.fetch_bazaar_data()
         self.items = self.fetch_items(only_bazaar)
+        self.items_cache: dict[str, SBItem] = {}
 
     def fetch_items(self, only_bazaar=True) -> List[SBItem]:
         response = requests.get("https://api.hypixel.net/v2/resources/skyblock/items")
@@ -76,6 +77,9 @@ class SkyblockItems:
         
         if only_bazaar:
             items = [item for item in items if item.bz_sell_price is not None or item.bz_buy_price is not None]
+            
+        items.append(SBItem("coins", "coins", 1, 1, 1, 1, 1))
+        
         return items
 
     def fetch_bazaar_data(self) -> BazaarResponse:
@@ -94,13 +98,20 @@ class SkyblockItems:
         return BazaarResponse(success=data["success"], lastUpdated=data["lastUpdated"], products=products)
 
     def search_by_name(self, name: str) -> SBItem:
+        # performance optimization
+        # really we should fix it in minion_data, not here but wtvr
+        if name in self.items_cache:
+            return self.items_cache[name]
+        
         if "_" in name:
             return self.search_by_sb_id(name)
         
         item = next((item for item in self.items if item.name == name), None)
         if item is None:
             raise ValueError(f"Item with name '{name}' not found")
-                
+        
+        self.items_cache[name] = item
+        
         return item
 
     def search_by_sb_id(self, sb_id: str) -> Optional[SBItem]:

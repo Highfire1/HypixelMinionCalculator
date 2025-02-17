@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Minion Combinations</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <div id="filters" style="display: flex; flex-direction: column; gap: 10px;">
+        <h1>Best Minion Combinations</h1>
+
+        <label for="minion-type">Minion Type:</label>
+        <div id="minion-type">
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Sheep-t11" checked> Sheep T11</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Sheep-t12" checked> Sheep T12</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Slime" checked> Slime</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Tarantula" checked> Tarantula</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Clay" checked> Clay</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Oak" checked> Oak</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Magma Cube" checked> Magma Cube</label>
+        </div>
+
+        <button id="apply-filters">Apply Filters</button>
+    </div>
+
+    <table id="results-table">
+        <thead>
+            <tr>
+                <th>Budget / Check Frequency</th>
+                <th>1 Day</th>
+                <th>2 Days</th>
+                <th>7 Days</th>
+                <th>14 Days</th>
+                <th>124 Days</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>$2M</td>
+                <td id="2m-1d"></td>
+                <td id="2m-2d"></td>
+                <td id="2m-7d"></td>
+                <td id="2m-14d"></td>
+                <td id="2m-124d"></td>
+            </tr>
+            <tr>
+                <td>$5M</td>
+                <td id="5m-1d"></td>
+                <td id="5m-2d"></td>
+                <td id="5m-7d"></td>
+                <td id="5m-14d"></td>
+                <td id="5m-124d"></td>
+            </tr>
+            <tr>
+                <td>$10M</td>
+                <td id="10m-1d"></td>
+                <td id="10m-2d"></td>
+                <td id="10m-7d"></td>
+                <td id="10m-14d"></td>
+                <td id="10m-124d"></td>
+            </tr>
+            <tr>
+                <td>$25M</td>
+                <td id="25m-1d"></td>
+                <td id="25m-2d"></td>
+                <td id="25m-7d"></td>
+                <td id="25m-14d"></td>
+                <td id="25m-124d"></td>
+            </tr>
+            <tr>
+                <td>$50M</td>
+                <td id="50m-1d"></td>
+                <td id="50m-2d"></td>
+                <td id="50m-7d"></td>
+                <td id="50m-14d"></td>
+                <td id="50m-124d"></td>
+            </tr>
+            <tr>
+                <td>$500M</td>
+                <td id="500m-1d"></td>
+                <td id="500m-2d"></td>
+                <td id="500m-7d"></td>
+                <td id="500m-14d"></td>
+                <td id="500m-124d"></td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div>
+        <br>
+        <span>Disclaimers:</span>
+        <p>BZ data from Feb 16th, 2025</p>
+        <p>Prices for postcard/beacon are based on having 29 minion slots.</p>
+        <p>Inferno minion not included due to complexity.</p>
+        <p>"sell to bz" means items are instant sold to bazaar</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <script src="table.js"></script>
+</body>
+
+</html>
