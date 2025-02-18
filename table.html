@@ -20,7 +20,9 @@
             <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Tarantula" checked> Tarantula</label>
             <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Clay" checked> Clay</label>
             <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Oak" checked> Oak</label>
-            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Magma Cube" checked> Magma Cube</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Magma Cube-t7" checked> Magma Cube T7</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Magma Cube-t9" checked> Magma Cube T9</label>
+            <label style="border: 1px solid black; padding: 5px; margin: 2px; display: inline-block; cursor: pointer;"><input type="checkbox" value="Magma Cube-t12" checked> Magma Cube T12</label>
         </div>
 
         <button id="apply-filters">Apply Filters</button>
@@ -31,9 +33,10 @@
             <tr>
             <th style="width: 5%;">Budget / Check Frequency</th>
             <th style="width: 17%;">1 Day</th>
-            <th style="width: 17%;">2 Days</th>
+            <!-- <th style="width: 17%;">2 Days</th> -->
             <th style="width: 17%;">7 Days</th>
             <th style="width: 17%;">14 Days</th>
+            <th style="width: 17%;">30 Days</th>
             <th style="width: 17%;">124 Days (every derpy)</th>
             </tr>
         </thead>
@@ -41,49 +44,55 @@
             <tr>
                 <td>$2M</td>
                 <td id="2m-1d"></td>
-                <td id="2m-2d"></td>
+                <!-- <td id="2m-2d"></td> -->
                 <td id="2m-7d"></td>
                 <td id="2m-14d"></td>
+                <td id="2m-30d"></td>
                 <td id="2m-124d"></td>
             </tr>
             <tr>
                 <td>$5M</td>
                 <td id="5m-1d"></td>
-                <td id="5m-2d"></td>
+                <!-- <td id="5m-2d"></td> -->
                 <td id="5m-7d"></td>
                 <td id="5m-14d"></td>
+                <td id="5m-30d"></td>
                 <td id="5m-124d"></td>
             </tr>
             <tr>
                 <td>$10M</td>
                 <td id="10m-1d"></td>
-                <td id="10m-2d"></td>
+                <!-- <td id="10m-2d"></td> -->
                 <td id="10m-7d"></td>
                 <td id="10m-14d"></td>
+                <td id="10m-30d"></td>
                 <td id="10m-124d"></td>
             </tr>
             <tr>
                 <td>$25M</td>
                 <td id="25m-1d"></td>
-                <td id="25m-2d"></td>
+                <!-- <td id="25m-2d"></td> -->
                 <td id="25m-7d"></td>
                 <td id="25m-14d"></td>
+                <td id="25m-30d"></td>
                 <td id="25m-124d"></td>
             </tr>
             <tr>
                 <td>$50M</td>
                 <td id="50m-1d"></td>
-                <td id="50m-2d"></td>
+                <!-- <td id="50m-2d"></td> -->
                 <td id="50m-7d"></td>
                 <td id="50m-14d"></td>
+                <td id="50m-30d"></td>
                 <td id="50m-124d"></td>
             </tr>
             <tr>
                 <td>$500M</td>
                 <td id="500m-1d"></td>
-                <td id="500m-2d"></td>
+                <!-- <td id="500m-2d"></td> -->
                 <td id="500m-7d"></td>
                 <td id="500m-14d"></td>
+                <td id="500m-30d"></td>
                 <td id="500m-124d"></td>
             </tr>
         </tbody>
@@ -95,6 +104,7 @@
         <span><strong>Disclaimers:</strong></span>
         <p>BZ data from Feb 16th, 2025</p>
         <p>Prices for postcard/beacon are based on having 29 minion slots.</p>
+        <p> "(361d + 49d payback)" means that it takes 361 days to pay off non-recoverable costs such as the cost of the minion, infusion, and free will, and it takes 49 days to pay off recoverable costs such as minion items, storage, postcard, beacon</p>
         <p>Inferno minion not included due to complexity.</p>
         <p>"sell to bz" means items are instant sold to bazaar</p>
     </div>

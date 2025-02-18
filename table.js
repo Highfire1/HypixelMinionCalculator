@@ -11,6 +11,16 @@ async function initDatabase() {
     return new SQL.Database(new Uint8Array(buffer));
 }
 
+const frequencies = [60*60*24, 60*60*48, 60*60*24*7, 60*60*24*14, 60*60*24*124];
+
+const frequencyMap = {
+    [frequencies[0]]: '1d',
+    [frequencies[1]]: '7d',
+    [frequencies[2]]: '14d',
+    [frequencies[3]]: '30d',
+    [frequencies[4]]: '124d'
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
     const db = await initDatabase();
 
@@ -19,7 +29,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const minionTypes = Array.from(minionTypeElements).map(el => el.value);
 
         const budgets = [2, 5, 10, 25, 50, 500].map(m => m * 1000000); // Convert to $M
-        const frequencies = [86400, 172800, 604800, 1209600, 10713600]; // Hardcoded timescales
 
         budgets.forEach(budget => {
             frequencies.forEach(frequency => {
@@ -36,7 +45,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Initial table load
     const budgets = [2, 5, 10, 25, 50, 500].map(m => m * 1000000); // Convert to $M
-    const frequencies = [86400, 172800, 604800, 1209600, 10713600]; // Hardcoded timescales
 
     budgets.forEach(budget => {
         frequencies.forEach(frequency => {
@@ -93,13 +101,6 @@ function fmtMoney(number) {
 }
 
 function renderTable(result, budget, frequency) {
-    const frequencyMap = {
-        86400: '1d',
-        172800: '2d',
-        604800: '7d',
-        1209600: '14d',
-        10713600: '124d'
-    };
 
     const minionTypeColors = {
         "Sheep": "#f0e68c", // Light Khaki
@@ -150,18 +151,21 @@ function renderTable(result, budget, frequency) {
     const instantSellProfit = bestCombination[26];
     const ehopperProfit = bestCombination[29];
     let optimalPerDay;
-    let payoff_days;
+    let payoff_days_recoverable;
+    let payoff_days_nonrecoverable;
 
     if (instantSellProfit > (ehopperProfit * 1.11)) {
         optimalPerDay = `${fmtMoney(instantSellProfit)}/day (sell to bz)`;
-        payoff_days = bestCombination[34] / instantSellProfit
+        payoff_days_recoverable = bestCombination[35] / instantSellProfit
+        payoff_days_nonrecoverable = bestCombination[36] / instantSellProfit
     } else {
         optimalPerDay = `${fmtMoney(ehopperProfit)}/day (ehopper)`;
-        payoff_days = bestCombination[34] / ehopperProfit
+        payoff_days_recoverable = bestCombination[35] / ehopperProfit
+        payoff_days_nonrecoverable = bestCombination[36] / ehopperProfit
     }
-    console.log(instantSellProfit, (ehopperProfit * 1.11))
 
-    payoff_days = payoff_days.toFixed(0)
+    payoff_days_recoverable = payoff_days_recoverable.toFixed(0)
+    payoff_days_nonrecoverable = payoff_days_nonrecoverable.toFixed(0)
     
     
     const setupCost = fmtMoney(bestCombination[34]);
@@ -179,7 +183,7 @@ function renderTable(result, budget, frequency) {
             ${fuel && `<span style="font-size: 0.9em">${fuel}</span><br>`}
             ${items && `<span style="font-size: 0.9em">${items}</span><br>`}
             ${upgrades && `<span style="font-size: 0.9em">${upgrades}</span><br>`}
-            <span style="font-size: 0.9em">Cost/minion: ${setupCost} (${payoff_days}d payback)</span>
+            <span style="font-size: 0.9em">Cost/minion: ${setupCost} (${payoff_days_nonrecoverable}d + ${payoff_days_recoverable}d payback)</span>
         </span>
     `;
 }
