@@ -97,7 +97,8 @@ ITEMS = (
     #     "Emerald", "Quartz", "Snow", "Clay", "Wheat", "Melon", "Mushroom", 
     #     "Slime"]), # technically voidling and tarantula should as well... but why would you???
     
-    MinionItemType("Super Compactor 3000", None, True, False, ["all"]),
+    # note: compactors *CAN* stack, but it doesn't do anything
+    MinionItemType("Super Compactor 3000", None, False, False, ["all"]),
     # MinionItemType("Dwarven Super Compactor", None, False, False, ["all"]),
     
     # # minion specific 
