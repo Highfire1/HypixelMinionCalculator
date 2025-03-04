@@ -809,8 +809,13 @@ for minion in MINIONS:
                     if minion.name == "Sheep":
                         levels = [len(minion.levels)-1, len(minion.levels)]
                         
-                    if minion.name == "Magma Cube":
-                        levels = [7, 9, 12]
+                    # if minion.name == "Magma Cube":
+                    #     levels = [7, 9, 12]
+                    
+                    # if 7 not in levels:
+                    #     levels.append(7)
+                    # if 9 not in levels:
+                    #     levels.append(9)
                     
                     for level in levels:
                         

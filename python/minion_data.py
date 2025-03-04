@@ -343,33 +343,33 @@ MINIONS = [
         ]
     ),
     
-    MinionBase("Magma Cube",
-        skill_type="combat",
-        crystal_bonus_percentage=0,
-        max_pet_bonus_percentage=30,
-        non_minion_spawning_exists=False,
-        non_minion_harvest_exists=True,
+    # MinionBase("Magma Cube",
+    #     skill_type="combat",
+    #     crystal_bonus_percentage=0,
+    #     max_pet_bonus_percentage=30,
+    #     non_minion_spawning_exists=False,
+    #     non_minion_harvest_exists=True,
         
-        levels = [
-            MLC(1, 32, 2, {"Magma Cream": 80, "Wooden Sword": 1}, None),
-            MLC(2, 32, 4, {"Magma Cream": 160}, None),
-            MLC(3, 30, 4, {"Magma Cream": 320}, None), 
-            MLC(4, 30, 6, {"Magma Cream": 512}, None),
-            MLC(5, 28, 6, {"Enchanted Magma Cream": 8}, None),
-            MLC(6, 28, 9, {"Enchanted Magma Cream": 16}, None),
-            MLC(7, 25, 9, {"Enchanted Magma Cream": 32}, None),
-            MLC(8, 25, 12, {"Enchanted Magma Cream": 64}, None),
-            MLC(9, 22, 12, {"Enchanted Magma Cream": 128}, None),
-            MLC(10, 22, 15, {"Enchanted Magma Cream": 256}, None),
-            MLC(11, 18, 15, {"Enchanted Magma Cream": 512}, None),
-            MLC(12, 16, 15, {"Enchanted Magma Cream": 1024, "coins": 2000000}, "Hilda"),
-        ],
+    #     levels = [
+    #         MLC(1, 32, 2, {"Magma Cream": 80, "Wooden Sword": 1}, None),
+    #         MLC(2, 32, 4, {"Magma Cream": 160}, None),
+    #         MLC(3, 30, 4, {"Magma Cream": 320}, None), 
+    #         MLC(4, 30, 6, {"Magma Cream": 512}, None),
+    #         MLC(5, 28, 6, {"Enchanted Magma Cream": 8}, None),
+    #         MLC(6, 28, 9, {"Enchanted Magma Cream": 16}, None),
+    #         MLC(7, 25, 9, {"Enchanted Magma Cream": 32}, None),
+    #         MLC(8, 25, 12, {"Enchanted Magma Cream": 64}, None),
+    #         MLC(9, 22, 12, {"Enchanted Magma Cream": 128}, None),
+    #         MLC(10, 22, 15, {"Enchanted Magma Cream": 256}, None),
+    #         MLC(11, 18, 15, {"Enchanted Magma Cream": 512}, None),
+    #         MLC(12, 16, 15, {"Enchanted Magma Cream": 1024, "coins": 2000000}, "Hilda"),
+    #     ],
         
-        actions = [
-            MinionAction("spawn", None),
-            MinionAction("harvest", [MinionDrop("Magma Cream", 1.8, 100)])
-        ]
-    ),
+    #     actions = [
+    #         MinionAction("spawn", None),
+    #         MinionAction("harvest", [MinionDrop("Magma Cream", 1.8, 100)])
+    #     ]
+    # ),
         
                
     
